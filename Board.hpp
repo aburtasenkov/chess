@@ -19,18 +19,22 @@ public:
                   row_type(second_dimension_size, default_val));
     }
 
-    std::ostream& output(std::ostream& os) const
-    {
-        for (const auto& first_dimension : container)
-        {
-            for (const auto& value : first_dimension)
-            {
-                os << value << " ";
-            }
-            os << "\n";
-        }
-        return os;
-    }
+    template <template <typename, typename> class C, typename V>
+    friend std::ostream& operator<<(std::ostream& os, const Board<C, V>& b);
 private:
     board_type container;
 };
+
+template <template <typename, typename> class Container, typename value_type>
+std::ostream& operator<<(std::ostream& os, const Board<Container, value_type>& b)
+{
+    for (const auto& first_dimension_container : b.container)
+    {
+        for (const auto& value : first_dimension_container)
+        {
+            os << value << " ";
+        }
+        os << "\n";
+    }
+    return os;
+}

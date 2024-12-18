@@ -1,11 +1,14 @@
-#include <vector>
-#include "Board.hpp"
+#include "Chess_board.hpp"
+using namespace chess_board_namespace;
 
-Board<std::vector, char> chess{ 8, 8, 'X' };
+ChessBoard board;
+
+Board<std::vector, char> b{8,2, 'X'};
 
 int main()
 {
-    chess.output(std::cout);
+    std::cout << b << "\n";
+    std::cout << board << "\n";
     return 0;
 }
 
