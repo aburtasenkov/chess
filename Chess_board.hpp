@@ -6,7 +6,7 @@ namespace chess_board_namespace
     template <typename T, typename A>
     using container_type = std::vector<T, A>;
     
-    typedef std::string value_type;     // std::string because it is not bound to 1 byte of data
+    typedef std::string value_type;     // std::string because it is not bound to 1 byte of data --> no overflow
 
     const int CHESS_BOARD_SIZE = 8;
     const value_type EMPTY_SQUARE = "□";
