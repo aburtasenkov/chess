@@ -1,4 +1,5 @@
 #include <iostream>
+#include <assert.h>
 
 /*
 Board template-class
@@ -15,6 +16,7 @@ public:
 
     Board(int first_dimension_size, int second_dimension_size, value_type default_val)    
     {
+        assert(first_dimension_size > 0 && second_dimension_size > 0);
         container = board_type(first_dimension_size, 
                   row_type(second_dimension_size, default_val));
     }
