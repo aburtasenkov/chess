@@ -6,6 +6,9 @@ namespace chess_board_namespace
     template <typename T, typename A>
     using container_type = std::vector<T, A>;
     
+    template <typename T>
+    using allocator_type = std::allocator<T>;
+    
     typedef std::string value_type;     // std::string because it is not bound to 1 byte of data --> no overflow
 
     const int CHESS_BOARD_SIZE = 8;
@@ -17,7 +20,7 @@ namespace chess_board_namespace
             friend std::ostream& operator<<(std::ostream& os, const ChessBoard& cb);
 
         private:
-            Board<container_type, value_type> board{CHESS_BOARD_SIZE, CHESS_BOARD_SIZE, EMPTY_SQUARE};
+            Board<container_type, value_type, allocator_type> board{CHESS_BOARD_SIZE, CHESS_BOARD_SIZE, EMPTY_SQUARE};
 
     };
 
