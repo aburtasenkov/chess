@@ -33,6 +33,12 @@ public:
         container = c;
     }
 
+    row_type& operator[](int index)
+    {
+        assert(index >= 0);
+        return container[index];
+    }
+
     template <template <typename, typename> class C, typename V, template <typename> class A>
     friend std::ostream& operator<<(std::ostream& os, const Board<C, V, A>& b);
 private:
