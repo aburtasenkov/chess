@@ -21,7 +21,7 @@ namespace cbn
             void restore();
 
         private:
-            Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
+            bn::Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
 
     };
 
@@ -30,5 +30,10 @@ namespace cbn
     std::ostream& operator<<(std::ostream& os, const ChessBoard& cb)
     {
         return os << cb.board;
+    }
+
+    void ChessBoard::restore()
+    {
+        board = DEFAULT_CHESS_BOARD;
     }
 }

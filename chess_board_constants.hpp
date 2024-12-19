@@ -25,34 +25,34 @@ const value_type BLACK_BISHOP = "♝";
 const value_type BLACK_KNIGHT = "♞";
 const value_type BLACK_PAWN = "♟";
 
-const Board<container_type, value_type, allocator_type>::row_type RANK_1{ "1", BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, 
+const bn::Board<container_type, value_type, allocator_type>::row_type RANK_1{ "1", BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, 
                                                                                 BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK };
 
-const Board<container_type, value_type, allocator_type>::row_type RANK_2{ "2", BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, 
+const bn::Board<container_type, value_type, allocator_type>::row_type RANK_2{ "2", BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, 
                                                                                 BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, };
 
-const Board<container_type, value_type, allocator_type>::row_type RANK_3{ "3", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+const bn::Board<container_type, value_type, allocator_type>::row_type RANK_3{ "3", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
                                                                             EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
 
-const Board<container_type, value_type, allocator_type>::row_type RANK_4{ "4", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+const bn::Board<container_type, value_type, allocator_type>::row_type RANK_4{ "4", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
                                                                             EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
 
-const Board<container_type, value_type, allocator_type>::row_type RANK_5{ "5", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+const bn::Board<container_type, value_type, allocator_type>::row_type RANK_5{ "5", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
                                                                             EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
 
-const Board<container_type, value_type, allocator_type>::row_type RANK_6{ "6", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+const bn::Board<container_type, value_type, allocator_type>::row_type RANK_6{ "6", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
                                                                             EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
 
-const Board<container_type, value_type, allocator_type>::row_type RANK_7{ "7", WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, 
+const bn::Board<container_type, value_type, allocator_type>::row_type RANK_7{ "7", WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, 
                                                                                 WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN };
                                                                             
-const Board<container_type, value_type, allocator_type>::row_type RANK_8{ "8", WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, 
+const bn::Board<container_type, value_type, allocator_type>::row_type RANK_8{ "8", WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, 
                                                                                 WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK };
 
-const Board<container_type, value_type, allocator_type>::row_type CHAR_COORDINATE_RANK{ "O", "A", "B", "C", "D", 
+const bn::Board<container_type, value_type, allocator_type>::row_type CHAR_COORDINATE_RANK{ "O", "A", "B", "C", "D", 
                                                                                 "E", "F", "G", "H" };
 
-const Board<container_type, value_type, allocator_type>::board_type DEFAULT_CHESS_BOARD
+const bn::Board<container_type, value_type, allocator_type>::board_type DEFAULT_CHESS_BOARD
 {
     RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8,
     CHAR_COORDINATE_RANK
