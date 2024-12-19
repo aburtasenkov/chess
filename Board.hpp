@@ -14,6 +14,8 @@ public:
     typedef Container<value_type, Alloc<value_type>> row_type; // type holding one row of the board ( second dimension )
     typedef Container<row_type, Alloc<row_type>> board_type;   // type holding all rows of the board ( first dimension )
 
+    Board() {   }
+
     Board(int first_dimension_size, int second_dimension_size, value_type default_val)    
     {
         assert(first_dimension_size > 0 && second_dimension_size > 0);
