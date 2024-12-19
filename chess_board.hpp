@@ -1,7 +1,7 @@
 #include <vector>
 #include "Board.hpp"
 
-namespace chess_board_namespace
+namespace cbn
 {
     #include "chess_board_constants.hpp"
 

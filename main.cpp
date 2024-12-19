@@ -1,5 +1,5 @@
 #include "chess_board.hpp"
-using namespace chess_board_namespace;
+using namespace cbn;
 
 ChessBoard board;
 
