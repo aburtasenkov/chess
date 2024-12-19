@@ -28,19 +28,28 @@ namespace chess_board_namespace
     const value_type BLACK_KNIGHT = "♞";
     const value_type BLACK_PAWN = "♟";
 
-    const Board<container_type, value_type, allocator_type>::row_type BLACK_BACK_RANK{ "1", BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, 
+    const Board<container_type, value_type, allocator_type>::row_type RANK_1{ "1", BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, 
                                                                                 BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK };
 
-    const Board<container_type, value_type, allocator_type>::row_type BLACK_PAWN_RANK{ "2", BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, 
+    const Board<container_type, value_type, allocator_type>::row_type RANK_2{ "2", BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, 
                                                                                 BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, };
 
-    const Board<container_type, value_type, allocator_type>::row_type EMPTY_RANK{ "3", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+    const Board<container_type, value_type, allocator_type>::row_type RANK_3{ "3", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
                                                                             EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
 
-    const Board<container_type, value_type, allocator_type>::row_type WHITE_PAWN_RANK{ "7", WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, 
+    const Board<container_type, value_type, allocator_type>::row_type RANK_4{ "4", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+                                                                            EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
+
+    const Board<container_type, value_type, allocator_type>::row_type RANK_5{ "5", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+                                                                            EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
+
+    const Board<container_type, value_type, allocator_type>::row_type RANK_6{ "6", EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+                                                                            EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
+
+    const Board<container_type, value_type, allocator_type>::row_type RANK_7{ "7", WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, 
                                                                                 WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN };
                                                                             
-    const Board<container_type, value_type, allocator_type>::row_type WHITE_BACK_RANK{ "8", WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, 
+    const Board<container_type, value_type, allocator_type>::row_type RANK_8{ "8", WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, 
                                                                                 WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK };
 
     const Board<container_type, value_type, allocator_type>::row_type CHAR_COORDINATE_RANK{ "O", "A", "B", "C", "D", 
@@ -48,9 +57,7 @@ namespace chess_board_namespace
 
     const Board<container_type, value_type, allocator_type>::board_type DEFAULT_CHESS_BOARD
     {
-        BLACK_BACK_RANK, BLACK_PAWN_RANK,
-        EMPTY_RANK, EMPTY_RANK, EMPTY_RANK,EMPTY_RANK,
-        WHITE_PAWN_RANK, WHITE_BACK_RANK,
+        RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8,
         CHAR_COORDINATE_RANK
     };
 
