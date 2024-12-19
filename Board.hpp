@@ -23,6 +23,16 @@ public:
                   row_type(second_dimension_size, default_val));
     }
 
+    Board(const board_type& c)
+    {
+        container = c;
+    }
+
+    board_type operator=(const board_type& c)
+    {
+        container = c;
+    }
+
     template <template <typename, typename> class C, typename V, template <typename> class A>
     friend std::ostream& operator<<(std::ostream& os, const Board<C, V, A>& b);
 private:
