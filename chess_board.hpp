@@ -90,34 +90,50 @@ namespace cbn
                         piece_info.color = Piece_color::Black;
                 }
 
-            const container_type<value_type, allocator_type<value_type>> operator()()
+            const container_type<ChessCoordinate, allocator_type<ChessCoordinate>> operator()()
             // return a container containing all legal moves for kind located at location
             {
-                container_type<value_type, allocator_type<value_type>> legal_moves{};
+                container_type<ChessCoordinate, allocator_type<ChessCoordinate>> legal_moves{};
+
+                ChessCoordinate legal_move = location;  // temporal variable for legal moves
 
                 if (piece_info.type == Piece_type::Pawn)
                 {
+                    if (piece_info.color == Piece_color::White)
+                    {
+                        if (location.integer = 7)
+                        {
+                            legal_move.integer = location.integer - 2;
+                            legal_moves.push_back(legal_move);
+                        }
+                    }
+
+                    else if (piece_info.color == Piece_color::Black)
+                    {
+
+                    }
                     // check if starting rank for WHITE and BLACK
                     // if yes return 2 front squares
                     // return 1 front square
+                    // Check for en passant
                 }
 
-                if (piece_info.type == Piece_type::Rook)
+                else if (piece_info.type == Piece_type::Rook)
                 {
                     // iterate up, down, left, right
                 }
 
-                if (piece_info.type == Piece_type::Knight)
+                else if (piece_info.type == Piece_type::Knight)
                 {
                     // iterate left, right
                 }
 
-                if (piece_info.type == Piece_type::Bishop)
+                else if (piece_info.type == Piece_type::Bishop)
                 {
                     // iterate left and right
                 }
 
-                if (piece_info.type == Piece_type::Queen)
+                else if (piece_info.type == Piece_type::Queen)
                 {
                     // make up some smart stuff here, code later
                 }
