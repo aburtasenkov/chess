@@ -1,5 +1,6 @@
 #include <vector>
 #include <map>
+#include <algorithm>
 #include "chess_notation.hpp"
 #include "chess_board_constants.hpp"
 
@@ -8,17 +9,21 @@ namespace cbn
     using namespace chess_notation;
     using namespace chess_board_constants;
 
-    enum class Piece
+    enum class Piece_type
     {
         Pawn, Rook, Knight, Bishop, Queen, King
     };
 
-    const std::map<const value_type, const Piece> piece_map
+    enum class Piece_color
     {
-        {BLACK_PAWN, Piece::Pawn}, {BLACK_ROOK, Piece::Rook}, {BLACK_KNIGHT, Piece::Knight}, 
-        {BLACK_BISHOP, Piece::Bishop}, {BLACK_QUEEN, Piece::Queen}, {BLACK_KING, Piece::King}, 
-        {WHITE_PAWN, Piece::Pawn}, {WHITE_ROOK, Piece::Rook}, {WHITE_KNIGHT, Piece::Knight}, 
-        {WHITE_BISHOP, Piece::Bishop}, {WHITE_QUEEN, Piece::Queen}, {WHITE_KING, Piece::King}, 
+        White, Black
+    };
+
+    struct Piece_data
+    {
+        value_type value;   // the character
+        Piece_type type;
+        Piece_color color;
     };
 
     class ChessBoard{
@@ -54,39 +59,46 @@ namespace cbn
     {
         public:
             Legalmoves(const ChessBoard& b, const ChessCoordinate& l)
-                :board(b), location(l)   {   }
+                :board(b), location(l)   
+                {
+                    piece_info.value = board[location];
+                    piece_info.type = piece_type_map.at(piece_info.value);
+
+                    // if in piece_color_white_vector --> white, else black
+                    if (std::find(piece_color_white_vector.begin(), piece_color_white_vector.end(), piece_info.value) != piece_color_white_vector.end())
+                        piece_info.color = Piece_color::White;
+                    else 
+                        piece_info.color = Piece_color::Black;
+                }
 
             const container_type<value_type, allocator_type<value_type>> operator()()
             // return a container containing all legal moves for kind located at location
             {
                 container_type<value_type, allocator_type<value_type>> legal_moves{};
 
-                value_type kind = board[location];
-                Piece type = piece_map.at(kind);
-
-                if (type == Piece::Pawn)
+                if (piece_info.type == Piece_type::Pawn)
                 {
                     // check if starting rank for WHITE and BLACK
                     // if yes return 2 front squares
                     // return 1 front square
                 }
 
-                if (type == Piece::Rook)
+                if (piece_info.type == Piece_type::Rook)
                 {
                     // iterate up, down, left, right
                 }
 
-                if (type == Piece::Knight)
+                if (piece_info.type == Piece_type::Knight)
                 {
-                    // iterate up, down, left ,right
+                    // iterate left, right
                 }
 
-                if (type == Piece::Bishop)
+                if (piece_info.type == Piece_type::Bishop)
                 {
                     // iterate left and right
                 }
 
-                if (type == Piece::Queen)
+                if (piece_info.type == Piece_type::Queen)
                 {
                     // make up some smart stuff here, code later
                 }
@@ -96,6 +108,7 @@ namespace cbn
             
         private:
             const ChessBoard& board;
+            Piece_data piece_info;
             ChessCoordinate location;
     };
 
