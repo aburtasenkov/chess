@@ -59,4 +59,17 @@ namespace chess_board_constants
         RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8,
         CHAR_COORDINATE_RANK
     };
+
+    const std::map<const value_type, const Piece_type> piece_type_map
+    {
+        {BLACK_PAWN, Piece_type::Pawn}, {BLACK_ROOK, Piece_type::Rook}, {BLACK_KNIGHT, Piece_type::Knight}, 
+        {BLACK_BISHOP, Piece_type::Bishop}, {BLACK_QUEEN, Piece_type::Queen}, {BLACK_KING, Piece_type::King}, 
+        {WHITE_PAWN, Piece_type::Pawn}, {WHITE_ROOK, Piece_type::Rook}, {WHITE_KNIGHT, Piece_type::Knight}, 
+        {WHITE_BISHOP, Piece_type::Bishop}, {WHITE_QUEEN, Piece_type::Queen}, {WHITE_KING, Piece_type::King}, 
+    };
+
+    const std::vector<const value_type> piece_color_white_vector
+    {
+        WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING
+    };
 }
