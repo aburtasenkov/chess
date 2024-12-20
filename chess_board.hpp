@@ -35,6 +35,16 @@ namespace cbn
                 square_ref = EMPTY_SQUARE;
             }
 
+            value_type& operator[](const ChessCoordinate& location)
+            {
+                return board[location.integer][location.character];
+            }
+
+            const value_type& operator[](const ChessCoordinate& location) const
+            {
+                return board[location.integer][location.character];
+            }
+
         private:
             bn::Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
 
