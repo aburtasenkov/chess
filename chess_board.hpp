@@ -1,4 +1,5 @@
 #include <vector>
+#include <map>
 #include "Board.hpp"
 #include "chess_notation.hpp"
 
@@ -9,6 +10,14 @@ namespace cbn
     enum class Piece
     {
         Pawn, Rook, Knight, Bishop, Queen, King
+    };
+
+    const std::map<const value_type, const Piece> piece_map
+    {
+        {BLACK_PAWN, Piece::Pawn}, {BLACK_ROOK, Piece::Rook}, {BLACK_KNIGHT, Piece::Knight}, 
+        {BLACK_BISHOP, Piece::Bishop}, {BLACK_QUEEN, Piece::Queen}, {BLACK_KING, Piece::King}, 
+        {WHITE_PAWN, Piece::Pawn}, {WHITE_ROOK, Piece::Rook}, {WHITE_KNIGHT, Piece::Knight}, 
+        {WHITE_BISHOP, Piece::Bishop}, {WHITE_QUEEN, Piece::Queen}, {WHITE_KING, Piece::King}, 
     };
 
     class ChessBoard{
