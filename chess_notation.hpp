@@ -8,7 +8,8 @@ namespace chess_notation
     const char ALPHABET_TO_INT = '`'; // character 1 int smaller than 'a' --> 'a' has index 1
     const int INDEX_TO_NUM = 1;
 
-    const Exception BadInput{"Bad Input: Piece Location"};
+    const Exception BadInputError{"Bad Input: Piece Location"};
+    const Exception EmptySquareError{"BadInput: Location Does Not Contain Any Pieces"};
 
     struct ChessCoordinate{
         ChessCoordinate ()
@@ -24,9 +25,9 @@ namespace chess_notation
         void assert_data()
         {
             if (!(0 < character && character < 9))  // index for column between 1 and 8 incl.
-                throw BadInput;
+                throw BadInputError;
             if (!(-1 < integer && integer < 8))    // index for row between 0 and 7 incl.
-                throw BadInput;
+                throw BadInputError;
         }
 
         // both are integer values, so I can use them for indexing ChessBoard[integer][character]

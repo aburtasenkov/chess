@@ -77,6 +77,10 @@ namespace cbn
                 :board(b), location(l)   
                 {
                     piece_info.value = board[location];
+
+                    if (piece_info.value == EMPTY_SQUARE)
+                        throw EmptySquareError;
+
                     piece_info.type = piece_type_map.at(piece_info.value);
 
                     // if in piece_color_white_vector --> white, else black
