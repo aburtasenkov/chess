@@ -1,11 +1,14 @@
 #include <iostream>
 #include <assert.h>
+#include "Exception.hpp"
 
 namespace chess_notation
 {
     const int CHESSCOORDINATE_INVALID_VALUE = -1;
     const char ALPHABET_TO_INT = '`'; // character 1 int smaller than 'a' --> 'a' has index 1
     const int INDEX_TO_NUM = 1;
+
+    const Exception BadInput{"Bad Input: Piece Location"};
 
     struct ChessCoordinate{
         ChessCoordinate ()
@@ -20,8 +23,10 @@ namespace chess_notation
 
         void assert_data()
         {
-            assert(0 < character && character < 9); // index for column between 1 and 8 incl.
-            assert(-1 < integer && integer < 8);    // index for row between 0 and 7 incl.
+            if (!(0 < character && character < 9))  // index for column between 1 and 8 incl.
+                throw BadInput;
+            if (!(-1 < integer && integer < 8))    // index for row between 0 and 7 incl.
+                throw BadInput;
         }
 
         // both are integer values, so I can use them for indexing ChessBoard[integer][character]
