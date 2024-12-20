@@ -1,11 +1,12 @@
 #include <vector>
 #include <map>
-#include "Board.hpp"
 #include "chess_notation.hpp"
+#include "chess_board_constants.hpp"
 
 namespace cbn
 {
-    #include "chess_board_constants.hpp"
+    using namespace chess_notation;
+    using namespace chess_board_constants;
 
     enum class Piece
     {
