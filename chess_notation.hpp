@@ -76,4 +76,17 @@ namespace chess_notation
         ChessCoordinate x;  // move from x
         ChessCoordinate y;  // to y
     };
+
+    std::ostream& operator<<(std::ostream& os, const ChessNotation& notation)
+    {
+        return os << "From: " << notation.x << " To: " << notation.y; 
+    }
+
+    std::istream& operator>>(std::istream& is, ChessNotation& notation)
+    {
+        is >> notation.x >> notation.y;
+        notation.x.assert_data();
+        notation.y.assert_data();
+        return is; 
+    } 
 }
