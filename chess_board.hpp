@@ -1,5 +1,6 @@
 #include <vector>
 #include <map>
+#include <array>
 #include <algorithm>
 #include "chess_notation.hpp"
 #include "chess_board_constants.hpp"
@@ -14,9 +15,22 @@ namespace cbn
         Pawn, Rook, Knight, Bishop, Queen, King
     };
 
+    const std::map<const value_type, const Piece_type> piece_type_map
+    {
+        {BLACK_PAWN, Piece_type::Pawn}, {BLACK_ROOK, Piece_type::Rook}, {BLACK_KNIGHT, Piece_type::Knight}, 
+        {BLACK_BISHOP, Piece_type::Bishop}, {BLACK_QUEEN, Piece_type::Queen}, {BLACK_KING, Piece_type::King}, 
+        {WHITE_PAWN, Piece_type::Pawn}, {WHITE_ROOK, Piece_type::Rook}, {WHITE_KNIGHT, Piece_type::Knight}, 
+        {WHITE_BISHOP, Piece_type::Bishop}, {WHITE_QUEEN, Piece_type::Queen}, {WHITE_KING, Piece_type::King}, 
+    };
+
     enum class Piece_color
     {
         White, Black
+    };
+
+    const std::array<const value_type, 6> piece_color_white_vector
+    {
+        WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING
     };
 
     struct Piece_data
@@ -25,6 +39,7 @@ namespace cbn
         Piece_type type;
         Piece_color color;
     };
+
 
     class ChessBoard{
 
