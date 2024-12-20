@@ -39,6 +39,24 @@ namespace cbn
 
     };
 
+    class Legalmoves
+    {
+        public:
+            Legalmoves(const ChessBoard& b, const ChessCoordinate& l)
+                :board(b), location(l)   {   }
+
+            const container_type<value_type, allocator_type<value_type>> operator()()
+            // return a container containing all legal moves for kind located at location
+            {
+                container_type<value_type, allocator_type<value_type>> legal_moves{};
+                return legal_moves;
+            }
+            
+        private:
+            const ChessBoard& board;
+            ChessCoordinate location;
+    };
+
     // Function and Method Definition
 
     std::ostream& operator<<(std::ostream& os, const ChessBoard& cb)
