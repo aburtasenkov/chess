@@ -6,6 +6,11 @@ namespace cbn
 {
     #include "chess_board_constants.hpp"
 
+    enum class Piece
+    {
+        Pawn, Rook, Knight, Bishop, Queen, King
+    };
+
     class ChessBoard{
 
         public:
