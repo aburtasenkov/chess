@@ -60,6 +60,37 @@ namespace cbn
             // return a container containing all legal moves for kind located at location
             {
                 container_type<value_type, allocator_type<value_type>> legal_moves{};
+
+                value_type kind = board[location];
+                Piece type = piece_map.at(kind);
+
+                if (type == Piece::Pawn)
+                {
+                    // check if starting rank for WHITE and BLACK
+                    // if yes return 2 front squares
+                    // return 1 front square
+                }
+
+                if (type == Piece::Rook)
+                {
+                    // iterate up, down, left, right
+                }
+
+                if (type == Piece::Knight)
+                {
+                    // iterate up, down, left ,right
+                }
+
+                if (type == Piece::Bishop)
+                {
+                    // iterate left and right
+                }
+
+                if (type == Piece::Queen)
+                {
+                    // make up some smart stuff here, code later
+                }
+
                 return legal_moves;
             }
             
