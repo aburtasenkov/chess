@@ -106,11 +106,15 @@ namespace chess_notation
 
     ChessCoordinate operator+(const ChessCoordinate& location, const ChessCoordinate& relocation)
     {
-        return ChessCoordinate{location.character + relocation.character, location.integer + relocation.integer};
+        ChessCoordinate temp{location.character + relocation.character, location.integer + relocation.integer};
+        temp.assert_data();
+        return temp;
     }
 
     ChessCoordinate operator-(const ChessCoordinate& location, const ChessCoordinate& relocation)
     {
-        return ChessCoordinate{location.character - relocation.character, location.integer - relocation.integer};
+        ChessCoordinate temp{location.character - relocation.character, location.integer - relocation.integer};
+        temp.assert_data();
+        return temp;
     }
 }
