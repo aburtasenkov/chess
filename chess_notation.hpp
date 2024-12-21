@@ -16,8 +16,8 @@ namespace chess_notation
     const int RANK_7_INDEX = 6;
     const int RANK_8_INDEX = 7;
 
-    const Exception BadInputError{"Bad Input: Piece Location"};
-    const Exception EmptySquareError{"BadInput: Location Does Not Contain Any Pieces"};
+    const Exception BadInputError{"BadInputError: Piece Location"};
+    const Exception EmptySquareError{"EmptySquareError: Location Does Not Contain Any Pieces"};
 
     struct ChessCoordinate{
         ChessCoordinate ()
