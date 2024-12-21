@@ -76,42 +76,40 @@ namespace chess_notation
     struct ChessNotation
     {
         ChessNotation()
-            :x(ChessCoordinate{}), y(ChessCoordinate{}) {   }
+            :from(ChessCoordinate{}), to(ChessCoordinate{}) {   }
 
         ChessNotation(const ChessCoordinate& f, const ChessCoordinate& t)
-            :x(f), y(t) 
+            :from(f), to(t) 
         {
-            x.assert_data();
-            y.assert_data();
-            assert(x != y);
+            from.assert_data();
+            to.assert_data();
+            assert(from != to);
         }
 
-        ChessCoordinate x;  // move from x
-        ChessCoordinate y;  // to y
+        ChessCoordinate from;  // move from x
+        ChessCoordinate to;  // to y
     };
 
     std::ostream& operator<<(std::ostream& os, const ChessNotation& notation)
     {
-        return os << "From: " << notation.x << " To: " << notation.y; 
+        return os << "From: " << notation.from << " To: " << notation.to; 
     }
 
     std::istream& operator>>(std::istream& is, ChessNotation& notation)
     {
-        is >> notation.x >> notation.y;
-        notation.x.assert_data();
-        notation.y.assert_data();
+        is >> notation.from >> notation.to;
+        notation.from.assert_data();
+        notation.to.assert_data();
         return is; 
     } 
 
     ChessCoordinate operator+(const ChessCoordinate& location, const ChessCoordinate& relocation)
     {
-        ChessCoordinate temp{location.character + relocation.character, location.integer + relocation.integer};
-        return temp;
+        return ChessCoordinate{location.character + relocation.character, location.integer + relocation.integer};
     }
 
     ChessCoordinate operator-(const ChessCoordinate& location, const ChessCoordinate& relocation)
     {
-        ChessCoordinate temp{location.character - relocation.character, location.integer - relocation.integer};
-        return temp;
+        return ChessCoordinate{location.character - relocation.character, location.integer - relocation.integer};
     }
 }

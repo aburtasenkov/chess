@@ -40,7 +40,6 @@ namespace cbn
         Piece_color color;
     };
 
-
     class ChessBoard{
 
         public:
@@ -48,22 +47,11 @@ namespace cbn
 
             void restore();
 
-            void move(const ChessNotation& xy)
-            {
-                value_type& square_ref = board[xy.x.integer][xy.x.character];
-                board[xy.y.integer][xy.y.character] = square_ref;
-                square_ref = EMPTY_SQUARE;
-            }
+            void move(const ChessNotation& xy);
 
-            value_type& operator[](const ChessCoordinate& location)
-            {
-                return board[location.integer][location.character];
-            }
+            value_type& operator[](const ChessCoordinate& location);
 
-            const value_type& operator[](const ChessCoordinate& location) const
-            {
-                return board[location.integer][location.character];
-            }
+            const value_type& operator[](const ChessCoordinate& location) const;
 
         private:
             bn::Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
@@ -82,7 +70,25 @@ namespace cbn
         board = DEFAULT_CHESS_BOARD;
     }
 
-    bool square_is_empty(const value_type& val)
+    void ChessBoard::move(const ChessNotation& movement)
+    // move a piece on the chess board from movement.x to movement.y
+    {
+        value_type& square_ref = board[movement.from.integer][movement.from.character];
+        board[movement.to.integer][movement.to.character] = square_ref;
+        square_ref = EMPTY_SQUARE;
+    }
+
+    value_type& ChessBoard::operator[](const ChessCoordinate& location)
+    {
+        return board[location.integer][location.character];
+    }
+
+    const value_type& ChessBoard::operator[](const ChessCoordinate& location) const
+    {
+        return board[location.integer][location.character];
+    }
+
+    bool is_empty(const value_type& val)
     {
         return val == EMPTY_SQUARE;
     }
@@ -115,7 +121,7 @@ namespace lmn
         {
         piece_info.value = board[location];
 
-        if (square_is_empty(board[location]))
+        if (is_empty(board[location]))
             throw EmptySquareError;
 
         piece_info.type = piece_type_map.at(piece_info.value);
@@ -145,11 +151,11 @@ namespace lmn
         {
             if (piece_info.color == color)
             {
-                if (square_is_empty(board[front]))
+                if (is_empty(board[front]))
                 {
                     legal_moves.push_back(front);
                     
-                    if (location.integer == starting_row && square_is_empty(board[front_2]))    // pawns on starting row can move 2 squares
+                    if (location.integer == starting_row && is_empty(board[front_2]))    // pawns on starting row can move 2 squares
                         legal_moves.push_back(front_2);
                 }
                 return;
