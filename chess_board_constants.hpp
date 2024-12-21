@@ -1,3 +1,4 @@
+#include <map>
 #include "Board.hpp"
 
 namespace chess_board_constants
@@ -9,6 +10,18 @@ namespace chess_board_constants
     using allocator_type = std::allocator<T>;
         
     using value_type = std::string;     // std::string because it is not bound to 1 byte of data --> no overflow
+
+    enum class Piece_type
+    {
+        Pawn, Rook, Knight, Bishop, Queen, King
+    };
+
+    enum class Piece_color
+    {
+        White, Black
+    };
+
+    const Exception IllegalMove{"IllegalMoveError: The Inputted Move is Illegal to do"};
 
     const int CHESS_BOARD_SIZE = 8;
     const value_type EMPTY_SQUARE = "□";
@@ -58,5 +71,18 @@ namespace chess_board_constants
     {
         RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8,
         CHAR_COORDINATE_RANK
+    };
+
+    const std::map<const value_type, const Piece_type> piece_type_map
+    {
+        {BLACK_PAWN, Piece_type::Pawn}, {BLACK_ROOK, Piece_type::Rook}, {BLACK_KNIGHT, Piece_type::Knight}, 
+        {BLACK_BISHOP, Piece_type::Bishop}, {BLACK_QUEEN, Piece_type::Queen}, {BLACK_KING, Piece_type::King}, 
+        {WHITE_PAWN, Piece_type::Pawn}, {WHITE_ROOK, Piece_type::Rook}, {WHITE_KNIGHT, Piece_type::Knight}, 
+        {WHITE_BISHOP, Piece_type::Bishop}, {WHITE_QUEEN, Piece_type::Queen}, {WHITE_KING, Piece_type::King}, 
+    };
+
+    const std::array<const value_type, 6> piece_color_white_vector
+    {
+        WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING
     };
 }
