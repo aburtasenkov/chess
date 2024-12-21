@@ -7,6 +7,14 @@ namespace chess_notation
     const int CHESSCOORDINATE_INVALID_VALUE = -1;
     const char ALPHABET_TO_INT = '`'; // character 1 int smaller than 'a' --> 'a' has index 1
     const int INDEX_TO_NUM = 1;
+    const int RANK_1_INDEX = 0;
+    const int RANK_2_INDEX = 1;
+    const int RANK_3_INDEX = 2;
+    const int RANK_4_INDEX = 3;
+    const int RANK_5_INDEX = 4;
+    const int RANK_6_INDEX = 5;
+    const int RANK_7_INDEX = 6;
+    const int RANK_8_INDEX = 7;
 
     const Exception BadInputError{"Bad Input: Piece Location"};
     const Exception EmptySquareError{"BadInput: Location Does Not Contain Any Pieces"};
@@ -95,4 +103,14 @@ namespace chess_notation
         notation.y.assert_data();
         return is; 
     } 
+
+    ChessCoordinate operator+(const ChessCoordinate& location, const ChessCoordinate& relocation)
+    {
+        return ChessCoordinate{location.character + relocation.character, location.integer + relocation.integer};
+    }
+
+    ChessCoordinate operator-(const ChessCoordinate& location, const ChessCoordinate& relocation)
+    {
+        return ChessCoordinate{location.character - relocation.character, location.integer - relocation.integer};
+    }
 }
