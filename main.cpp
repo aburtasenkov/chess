@@ -1,28 +1,31 @@
 #include "chess_board.hpp"
 using namespace cbn;
+using namespace lmn;
 
 ChessBoard board;
 
-int main()
-try {
-    // while (true)
-    // {
-    //     std::cout << board;
-    //     ChessCoordinate x, y;
-    //     std::cin >> x >> y;
-    //     board.move({x,y});
-    // }
-    std::cout << board;
-    ChessCoordinate x;
-    std::cin >> x;
-    Legalmoves lm {board, x};
-    std::vector<ChessCoordinate> legal_moves = lm();
-    std::cout << legal_moves.size() << "\n";
-    std::cout << board;
-    return 0;
-}
-catch (Exception& e)
+template <typename T>
+std::ostream& operator<<(std::ostream& os,std::vector<T>& v)
 {
-    std::cerr << e.what() << "\n";
+    for (auto& x : v)
+        os << x << " ";
+    return os;
 }
 
+int main()
+{
+    ChessNotation move;
+
+    while (true)
+    try {
+        std::cout << board;
+
+        std::cin >> move;
+
+        board.move(move);
+    }
+    catch (Exception& e)
+    {
+        std::cerr << e.what() << "\n";
+    }
+}
