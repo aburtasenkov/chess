@@ -83,6 +83,11 @@ namespace lmn
 {
     using namespace cbn;
 
+    auto plus = [](int i, int ii) { return i + ii; };
+    auto minus = [](int i, int ii) { return i - ii; };
+    auto smaller_equal = [](int left, int right) { return left <= right; };
+    auto bigger_equal = [](int left, int right) { return left >= right; };
+
     class Legalmoves
     {
         public:
@@ -167,24 +172,30 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::container_type<cbn::ChessCoord
 
 void lmn::Legalmoves::append_legalmoves_rook_horizontal(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
+    typedef int (*arithmetic)(int, int);
+    typedef bool (*boolean_func)(int,int);
 
-    for (int shift = 1; location.character + shift <= MAX_INDEX_HORIZONTAL; ++shift)
+    // right --> operations
+    arithmetic operation = plus;
+    boolean_func boolean = smaller_equal;
+    int RANGE_REF = MAX_INDEX_HORIZONTAL;
+
+    // do twice
+    for (int _ = 0; _ < 2; ++_)
     {
-        cbn::ChessCoordinate current{location.character + shift, location.integer};
-        if (is_empty(board[current]))
-            legal_moves.push_back(current);
-        else 
-            break;
-    }
+        for (int shift = 1; boolean(operation(location.character, shift), RANGE_REF); ++shift)
+        {
+            cbn::ChessCoordinate current{operation(location.character, shift), location.integer};
+            if (is_empty(board[current]))
+                legal_moves.push_back(current);
+            else 
+                break;
+        }
 
-
-    for (int shift = 1; location.character - shift >= MIN_INDEX_HORIZONTAL; ++shift)
-    {
-        cbn::ChessCoordinate current{location.character - shift, location.integer};
-        if (is_empty(board[current]))
-            legal_moves.push_back(current);
-        else 
-            break;
+        // left <-- operations
+        operation = minus;
+        boolean = bigger_equal;
+        RANGE_REF = MIN_INDEX_HORIZONTAL;
     }
 
     return;
@@ -192,24 +203,30 @@ void lmn::Legalmoves::append_legalmoves_rook_horizontal(cbn::container_type<cbn:
 
 void lmn::Legalmoves::append_legalmoves_rook_vertical(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
-    // down
-    for (int shift = 1; location.integer + shift <= MAX_INDEX_VERTICAL; ++shift)
-    {
-        cbn::ChessCoordinate current{location.character, location.integer + shift};
-        if (is_empty(board[current]))
-            legal_moves.push_back(current);
-        else 
-            break;
-    }
+    typedef int (*arithmetic)(int, int);
+    typedef bool (*boolean_func)(int,int);
 
-    // up
-    for (int shift = 1; location.integer - shift >= MIN_INDEX_VERTICAL; ++shift)
+    // down operations
+    arithmetic operation = plus;
+    boolean_func boolean = smaller_equal;
+    int RANGE_REF = MAX_INDEX_VERTICAL;
+
+    // do twice
+    for (int _ = 0; _ < 2; ++_)
     {
-        cbn::ChessCoordinate current{location.character, location.integer - shift};
-        if (is_empty(board[current]))
-            legal_moves.push_back(current);
-        else 
-            break;
+        for (int shift = 1; boolean(operation(location.integer, shift), RANGE_REF); ++shift)
+        {
+            cbn::ChessCoordinate current{location.character, operation(location.integer, shift)};
+            if (is_empty(board[current]))
+                legal_moves.push_back(current);
+            else 
+                break;
+        }
+
+        // up operations
+        operation = minus;
+        boolean = bigger_equal;
+        RANGE_REF = MIN_INDEX_VERTICAL;
     }
 
     return;
