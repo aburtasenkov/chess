@@ -3,6 +3,7 @@ using namespace cbn;
 using namespace lmn;
 
 ChessBoard board;
+Legalmoves legal{board};
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os,std::vector<T>& v)
@@ -14,15 +15,20 @@ std::ostream& operator<<(std::ostream& os,std::vector<T>& v)
 
 int main()
 {
-    ChessNotation move;
+    ChessCoordinate from, to;
 
     while (true)
     try {
         std::cout << board;
 
-        std::cin >> move;
+        std::cin >> from;
 
-        board.move(move);
+        auto legal_moves = legal(from);
+        std::cout << "List of all legal moves: " << legal_moves << "\n";
+
+        std::cin >> to;
+
+        board.move(ChessNotation{from, to});
     }
     catch (Exception& e)
     {

@@ -301,10 +301,8 @@ void cbn::ChessBoard::move(const cbn::ChessNotation& movement)
 // move a piece on the chess board from movement.x to movement.y
 {
     lmn::Legalmoves legal{*this};
-
+    
     auto legal_moves = legal(movement.from);
-
-    std::cout << legal_moves.size() << "\n";
 
     if (move_is_legal(legal_moves, movement))
     {
