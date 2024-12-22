@@ -5,6 +5,12 @@
 namespace chess_notation
 {
     const int CHESSCOORDINATE_INVALID_VALUE = -1;
+
+    const int MAX_INDEX_HORIZONTAL = 8;
+    const int MAX_INDEX_VERTICAL = 7;
+    const int MIN_INDEX_HORIZONTAL = 1;
+    const int MIN_INDEX_VERTICAL = 0;
+
     const char ALPHABET_TO_INT = '`'; // character 1 int smaller than 'a' --> 'a' has index 1
     const int INDEX_TO_NUM = 1;
     const int RANK_1_INDEX = 0;
@@ -31,9 +37,9 @@ namespace chess_notation
 
         void assert_data()
         {
-            if (!(0 < character && character < 9))  // index for column between 1 and 8 incl.
+            if (!(MIN_INDEX_HORIZONTAL <= character && character <= MAX_INDEX_HORIZONTAL))
                 throw BadInputError;
-            if (!(-1 < integer && integer < 8))    // index for row between 0 and 7 incl.
+            if (!(MIN_INDEX_VERTICAL <= integer && integer <= MAX_INDEX_VERTICAL))
                 throw BadInputError;
         }
 
