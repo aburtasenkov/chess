@@ -110,7 +110,7 @@ namespace lmn
 
     };
 
-
+    cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> generate_mixes(int i1, int i2);
 };
 
 /*******************************************************************Function definition*********************************************************************/
@@ -298,6 +298,29 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
     }
 
     return legal_moves;
+}
+
+cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> lmn::generate_mixes(int i1, int i2)
+// return container of pairs of all possible mixes of i1 and i2
+// including negative and positive values
+{
+    cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> mix;
+
+    for (int _ = 0; _ < 2; ++_)
+    {
+        for (int __ = 0; __ < 2; ++__)
+        {
+            for (int ___ = 0; ___ < 2; ++___)
+            {
+                mix.push_back(std::pair<int,int>{i1, i2});
+                i2 = -i2;
+            }
+            i1 = -i1;
+        }
+        std::swap(i1, i2);
+    }
+
+    return mix;
 }
 
 /*************************Functions requiring Legalmoves and Chessboard****************************/
