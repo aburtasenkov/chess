@@ -144,13 +144,13 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::container_type<cbn::ChessCoord
 
     cbn::ChessCoordinate front = location - cbn::ChessCoordinate{0,1};    // coordinate in front of pawn
     cbn::ChessCoordinate front_2 = front - cbn::ChessCoordinate{0,1};     // coordinate 2 squares in front of pawn
-    cbn::Piece_color color = cbn::Piece_color::White;
+    cbn::Piece_color curr_color = cbn::Piece_color::White;
     int starting_row = cbn::RANK_7_INDEX;
 
     // Do once for white, once for black
     for (int _ = 0; _ < 2; ++_)
     {
-        if (piece_info.color == color)
+        if (piece_info.color == curr_color)
         {
             if (cbn::is_empty(board[front]))
             {
@@ -162,7 +162,7 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::container_type<cbn::ChessCoord
             return;
         }
 
-        color = cbn::Piece_color::Black;
+        curr_color = cbn::Piece_color::Black;
         starting_row = cbn::RANK_2_INDEX;
         front = location + cbn::ChessCoordinate{0,1};
         front_2 = front + cbn::ChessCoordinate{0,1};
@@ -172,11 +172,11 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::container_type<cbn::ChessCoord
 
 void lmn::Legalmoves::append_legalmoves_rook_horizontal(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
-    typedef int (*arithmetic)(int, int);
+    typedef int (*arithmetic_func)(int, int);
     typedef bool (*boolean_func)(int,int);
 
     // right --> operations
-    arithmetic operation = plus;
+    arithmetic_func operation = plus;
     boolean_func boolean = smaller_equal;
     int RANGE_REF = MAX_INDEX_HORIZONTAL;
 
@@ -203,11 +203,11 @@ void lmn::Legalmoves::append_legalmoves_rook_horizontal(cbn::container_type<cbn:
 
 void lmn::Legalmoves::append_legalmoves_rook_vertical(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
-    typedef int (*arithmetic)(int, int);
+    typedef int (*arithmetic_func)(int, int);
     typedef bool (*boolean_func)(int,int);
 
     // down operations
-    arithmetic operation = plus;
+    arithmetic_func operation = plus;
     boolean_func boolean = smaller_equal;
     int RANGE_REF = MAX_INDEX_VERTICAL;
 
