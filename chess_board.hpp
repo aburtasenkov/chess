@@ -8,6 +8,7 @@ namespace cbn
 {
     using namespace chess_notation;
     using namespace chess_board_constants;
+    using coordinate_container = container_type<ChessCoordinate, allocator_type<ChessCoordinate>>;
 
     struct Piece_data
     {
@@ -42,7 +43,7 @@ namespace cbn
     bool is_empty(const value_type& val);
 
     // return true if movement.from is in legal_moves --> the move is legal
-    bool move_is_legal(const cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::ChessNotation& movement);
+    bool move_is_legal(const coordinate_container& legal_moves, const ChessNotation& movement);
 }
 
 /**************************************************************************************Function definition*******************************************************************/
@@ -72,7 +73,7 @@ bool cbn::is_empty(const value_type& val)
     return val == EMPTY_SQUARE;
 }
 
-bool cbn::move_is_legal(const cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::ChessNotation& movement)
+bool cbn::move_is_legal(const cbn::coordinate_container& legal_moves, const cbn::ChessNotation& movement)
 {
     return (std::find(legal_moves.begin(), legal_moves.end(), movement.to) != legal_moves.end());
 }
@@ -104,7 +105,7 @@ namespace lmn
             void append_legalmoves_pawn(container_type<ChessCoordinate, allocator_type<ChessCoordinate>>& legal_moves, const Piece_data& piece_info, const ChessCoordinate& location);
             void append_legalmoves_rook_horizontal(container_type<ChessCoordinate, allocator_type<ChessCoordinate>>& legal_moves, const Piece_data& piece_info, const ChessCoordinate& location);
             void append_legalmoves_rook_vertical(container_type<ChessCoordinate, allocator_type<ChessCoordinate>>& legal_moves, const Piece_data& piece_info, const ChessCoordinate& location);
-            void append_legalmoves_knight(container_type<ChessCoordinate, allocator_type<ChessCoordinate>>& legal_moves, const Piece_data& piece_info, const ChessCoordinate& location);
+            void append_legalmoves_knight(container_type<ChessCoordinate, allocator_type<ChessCoordinate>>& legal_moves, const Piece_data& piece_info, const ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_legalmoves_bishop(container_type<ChessCoordinate, allocator_type<ChessCoordinate>>& legal_moves, const Piece_data& piece_info, const ChessCoordinate& location);
             void append_legalmoves_queen(container_type<ChessCoordinate, allocator_type<ChessCoordinate>>& legal_moves, const Piece_data& piece_info, const ChessCoordinate& location);
             void append_legalmoves_king(container_type<ChessCoordinate, allocator_type<ChessCoordinate>>& legal_moves, const Piece_data& piece_info, const ChessCoordinate& location);
@@ -137,7 +138,7 @@ cbn::Piece_data lmn::Legalmoves::get_piece_info(const cbn::ChessCoordinate& loca
     return piece_info;
 }
 
-void lmn::Legalmoves::append_legalmoves_pawn(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 // append legal_moves with possible moves for pawns
 {
     // Check for en passant, TODO
@@ -170,7 +171,7 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::container_type<cbn::ChessCoord
     return;
 }
 
-void lmn::Legalmoves::append_legalmoves_rook_horizontal(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_rook_horizontal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
     typedef int (*arithmetic_func)(int, int);
     typedef bool (*boolean_func)(int,int);
@@ -201,7 +202,7 @@ void lmn::Legalmoves::append_legalmoves_rook_horizontal(cbn::container_type<cbn:
     return;
 }
 
-void lmn::Legalmoves::append_legalmoves_rook_vertical(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_rook_vertical(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
     typedef int (*arithmetic_func)(int, int);
     typedef bool (*boolean_func)(int,int);
@@ -232,36 +233,40 @@ void lmn::Legalmoves::append_legalmoves_rook_vertical(cbn::container_type<cbn::C
     return;
 }
 
-void lmn::Legalmoves::append_legalmoves_knight(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_knight(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
+{
+    cbn::ChessCoordinate current = location + cbn::ChessCoordinate{offset_x, offset_y};
+
+    if (is_empty(board[current]))
+        legal_moves.push_back(current);
+
+    return;
+}
+
+void lmn::Legalmoves::append_legalmoves_bishop(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
     // todo
     return;
 }
 
-void lmn::Legalmoves::append_legalmoves_bishop(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
-{
-    // todo
-    return;
-}
-
-void lmn::Legalmoves::append_legalmoves_queen(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_queen(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
     // todo, use rook and bishop functions
     return;
 }
 
-void lmn::Legalmoves::append_legalmoves_king(cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>>& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
     // todo
     return;
 }
      
-const cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>> lmn::Legalmoves::operator()(const cbn::ChessCoordinate& location)
+const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoordinate& location)
 // return a container containing all legal moves for kind located at location
 {
     cbn::Piece_data piece_info = get_piece_info(location);
 
-    cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCoordinate>> legal_moves{};
+    cbn::coordinate_container legal_moves{};
 
     if (piece_info.type == cbn::Piece_type::Pawn)
         append_legalmoves_pawn(legal_moves, piece_info, location);
@@ -274,7 +279,7 @@ const cbn::container_type<cbn::ChessCoordinate, cbn::allocator_type<cbn::ChessCo
 
     else if (piece_info.type == cbn::Piece_type::Knight)
     {
-        append_legalmoves_knight(legal_moves, piece_info, location);
+        append_legalmoves_knight(legal_moves, piece_info, location, 0, 0);
     }
 
     else if (piece_info.type == cbn::Piece_type::Bishop)
