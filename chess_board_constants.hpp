@@ -88,4 +88,6 @@ namespace chess_board_constants
 
     const int KNIGHT_OFFSET_LONG_SIDE = 2;
     const int KNIGHT_OFFSET_SHORT_SIDE = 1;
+
+    const int BISHOP_OFFSET = 1;
 }
