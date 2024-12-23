@@ -5,6 +5,13 @@ using namespace lmn;
 ChessBoard board;
 Legalmoves legal{board};
 
+template <typename T, typename TT>
+std::ostream& operator<<(std::ostream& os, std::pair<T,TT> pair)
+{
+    os << '{' << pair.first << ", " << pair.second << '}';
+    return os;
+}
+
 template <typename T>
 std::ostream& operator<<(std::ostream& os,std::vector<T>& v)
 {
