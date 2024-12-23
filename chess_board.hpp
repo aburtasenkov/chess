@@ -101,8 +101,7 @@ namespace lmn
 
             cbn::Piece_data get_piece_info(const cbn::ChessCoordinate& location);
             void append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
-            void append_legalmoves_rook_horizontal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
-            void append_legalmoves_rook_vertical(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
+            void append_legalmoves_rook(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_knight_move(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_bishop_diagonal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
@@ -170,63 +169,18 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
     return;
 }
 
-void lmn::Legalmoves::append_legalmoves_rook_horizontal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_rook(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 {
-    typedef int (*arithmetic_func)(int, int);
-    typedef bool (*boolean_func)(int,int);
+    cbn::ChessCoordinate current = location + cbn::ChessCoordinate{offset_x, offset_y};
 
-    // right --> operations
-    arithmetic_func operation = plus;
-    boolean_func boolean = smaller_equal;
-    int RANGE_REF = cbn::MAX_INDEX_HORIZONTAL;
-
-    // do twice
-    for (int _ = 0; _ < 2; ++_)
+    while (current.is_valid())
     {
-        for (int shift = 1; boolean(operation(location.character, shift), RANGE_REF); ++shift)
-        {
-            cbn::ChessCoordinate current{operation(location.character, shift), location.integer};
-            if (cbn::is_empty(board[current]))
-                legal_moves.push_back(current);
-            else 
-                break;
-        }
+        if (cbn::is_empty(board[current]))
+            legal_moves.push_back(current);
+        else
+            break;
 
-        // left <-- operations
-        operation = minus;
-        boolean = bigger_equal;
-        RANGE_REF = cbn::MIN_INDEX_HORIZONTAL;
-    }
-
-    return;
-}
-
-void lmn::Legalmoves::append_legalmoves_rook_vertical(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
-{
-    typedef int (*arithmetic_func)(int, int);
-    typedef bool (*boolean_func)(int,int);
-
-    // down operations
-    arithmetic_func operation = plus;
-    boolean_func boolean = smaller_equal;
-    int RANGE_REF = cbn::MAX_INDEX_VERTICAL;
-
-    // do twice
-    for (int _ = 0; _ < 2; ++_)
-    {
-        for (int shift = 1; boolean(operation(location.integer, shift), RANGE_REF); ++shift)
-        {
-            cbn::ChessCoordinate current{location.character, operation(location.integer, shift)};
-            if (cbn::is_empty(board[current]))
-                legal_moves.push_back(current);
-            else 
-                break;
-        }
-
-        // up operations
-        operation = minus;
-        boolean = bigger_equal;
-        RANGE_REF = cbn::MIN_INDEX_VERTICAL;
+        current += cbn::ChessCoordinate{offset_x, offset_y};
     }
 
     return;
@@ -284,8 +238,15 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 
     if (piece_info.type == cbn::Piece_type::Rook || piece_info.type == cbn::Piece_type::Queen)
     {
-        append_legalmoves_rook_horizontal(legal_moves, piece_info, location);
-        append_legalmoves_rook_vertical(legal_moves, piece_info, location);
+        // create pairs of all directions for rooks move
+        auto offsets = lmn::generate_mixes(cbn::ROOK_OFFSET_X, cbn::ROOK_OFFSET_Y);
+        auto extension = lmn::generate_mixes(cbn::ROOK_OFFSET_Y, cbn::ROOK_OFFSET_X);
+        offsets.insert(offsets.begin(), extension.begin(), extension.end());
+
+        for (const auto& [offset_x, offset_y] : offsets)
+        {
+            append_legalmoves_rook(legal_moves, piece_info, location, offset_x, offset_y);
+        }
     }
 
     if (piece_info.type == cbn::Piece_type::Bishop || piece_info.type == cbn::Piece_type::Queen)
@@ -305,8 +266,8 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
     {
         // create pairs of all offsets for knight moves
         auto offsets = lmn::generate_mixes(cbn::KNIGHT_OFFSET_LONG_SIDE, cbn::KNIGHT_OFFSET_SHORT_SIDE);
-        auto addition = lmn::generate_mixes(cbn::KNIGHT_OFFSET_SHORT_SIDE, cbn::KNIGHT_OFFSET_LONG_SIDE);
-        offsets.insert(offsets.end(), addition.begin(), addition.end());
+        auto extension = lmn::generate_mixes(cbn::KNIGHT_OFFSET_SHORT_SIDE, cbn::KNIGHT_OFFSET_LONG_SIDE);
+        offsets.insert(offsets.end(), extension.begin(), extension.end());
 
         for (const auto& [offset_x, offset_y] : offsets)
         {
@@ -318,10 +279,10 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
     {
         // create pairs of all possible offsets for kings move
         auto offsets = lmn::generate_mixes(cbn::KING_OFFSET_DIAGONAL, cbn::KING_OFFSET_DIAGONAL);
-        auto addition = lmn::generate_mixes(cbn::KING_OFFSET_DIAGONAL, cbn::KING_OFFSET_CROSSWAYS);
-        offsets.insert(offsets.end(), addition.begin(), addition.end());
-        addition = lmn::generate_mixes(cbn::KING_OFFSET_CROSSWAYS, cbn::KING_OFFSET_DIAGONAL);
-        offsets.insert(offsets.end(), addition.begin(), addition.end());
+        auto extension = lmn::generate_mixes(cbn::KING_OFFSET_DIAGONAL, cbn::KING_OFFSET_CROSSWAYS);
+        offsets.insert(offsets.end(), extension.begin(), extension.end());
+        extension = lmn::generate_mixes(cbn::KING_OFFSET_CROSSWAYS, cbn::KING_OFFSET_DIAGONAL);
+        offsets.insert(offsets.end(), extension.begin(), extension.end());
 
         for (const auto& [offset_x, offset_y] : offsets)
         {
