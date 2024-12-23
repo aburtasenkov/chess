@@ -105,7 +105,7 @@ namespace lmn
             void append_legalmoves_rook_vertical(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
             void append_knight_move(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_bishop_diagonal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
-            void append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
+            void append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
 
     };
 
@@ -262,7 +262,7 @@ void lmn::Legalmoves::append_bishop_diagonal(cbn::coordinate_container& legal_mo
     return;
 }
 
-void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 {
     // todo
     return;
@@ -283,7 +283,8 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 
     if (piece_info.type == cbn::Piece_type::Bishop || piece_info.type == cbn::Piece_type::Queen)
     {
-        auto offsets = generate_mixes(cbn::BISHOP_OFFSET, cbn::BISHOP_OFFSET);  // mixes of all possible values for diagonals
+        // create pairs of all offsets for bishop moves
+        auto offsets = lmn::generate_mixes(cbn::BISHOP_OFFSET, cbn::BISHOP_OFFSET);
         for (const auto& [offset_x, offset_y] : offsets)
         {
             append_bishop_diagonal(legal_moves, piece_info, location, offset_x, offset_y);
@@ -308,7 +309,18 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 
     else if (piece_info.type == cbn::Piece_type::King)
     {
-        append_legalmoves_king(legal_moves, piece_info, location);
+        auto offsets = lmn::generate_mixes(cbn::KING_OFFSET_DIAGONAL, cbn::KING_OFFSET_DIAGONAL);
+        auto addition = lmn::generate_mixes(cbn::KING_OFFSET_DIAGONAL, cbn::KING_OFFSET_CROSSWAYS);
+        offsets.insert(offsets.end(), addition.begin(), addition.end());
+        addition = lmn::generate_mixes(cbn::KING_OFFSET_CROSSWAYS, cbn::KING_OFFSET_DIAGONAL);
+        offsets.insert(offsets.end(), addition.begin(), addition.end());
+
+        for (const auto& [offset_x, offset_y] : offsets)
+        {
+            std::cout << offset_x << offset_y << "\n";
+        }
+
+        append_legalmoves_king(legal_moves, piece_info, location, 0, 0);
     }
 
     return legal_moves;
@@ -317,6 +329,7 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> lmn::generate_mixes(int i1, int i2)
 // return container of pairs of all possible mixes of i1 and i2
 // including negative and positive values
+// all values in mix are unique
 {
     cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> mix;
 
@@ -324,7 +337,11 @@ cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>>
     {
         for (int ___ = 0; ___ < 2; ++___)
         {
-            mix.push_back(std::pair<int,int>{i1, i2});
+            std::pair<int,int> pair {i1, i2};
+
+            // if not already in mix
+            if (std::find(mix.begin(), mix.end(), pair) == mix.end())
+                mix.push_back(pair);
             i2 = -i2;
         }
         i1 = -i1;
