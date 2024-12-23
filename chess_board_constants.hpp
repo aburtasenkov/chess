@@ -86,6 +86,6 @@ namespace chess_board_constants
         WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING
     };
 
-    const int knight_offset_long = 2;
-    const int knight_offset_short = 1;
+    const int KNIGHT_OFFSET_LONG_SIDE = 2;
+    const int KNIGHT_OFFSET_SHORT_SIDE = 1;
 }
