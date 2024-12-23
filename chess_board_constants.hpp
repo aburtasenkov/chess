@@ -90,4 +90,7 @@ namespace chess_board_constants
     const int KNIGHT_OFFSET_SHORT_SIDE = 1;
 
     const int BISHOP_OFFSET = 1;
+
+    const int KING_OFFSET_DIAGONAL = 1;
+    const int KING_OFFSET_CROSSWAYS = 0;
 }
