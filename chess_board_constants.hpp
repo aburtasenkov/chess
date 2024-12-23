@@ -94,6 +94,6 @@ namespace chess_board_constants
     const int KING_OFFSET_DIAGONAL = 1;
     const int KING_OFFSET_CROSSWAYS = 0;
 
-    const int ROOK_OFFSET_DIRECTION_ONE = 1;
-    const int ROOK_OFFSET_DIRECTION_TWO = 0;
+    const int ROOK_OFFSET_X = 1;
+    const int ROOK_OFFSET_Y = 0;
 }
