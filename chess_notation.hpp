@@ -35,6 +35,12 @@ namespace chess_notation
             integer = i;
         }
 
+        ChessCoordinate(const ChessCoordinate& c)
+        {
+            character = c.character;
+            integer = c.integer;
+        }
+
         bool is_valid()
         {
             if (!(MIN_INDEX_HORIZONTAL <= character && character <= MAX_INDEX_HORIZONTAL))
