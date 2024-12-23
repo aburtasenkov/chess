@@ -133,4 +133,18 @@ namespace chess_notation
     {
         return ChessCoordinate{location.character - relocation.character, location.integer - relocation.integer};
     }
+
+    ChessCoordinate& operator+=(ChessCoordinate& location, const ChessCoordinate& shift)
+    {
+        location.character += shift.character;
+        location.integer += shift.integer;
+        return location;
+    }
+
+    ChessCoordinate& operator-=(ChessCoordinate& location, const ChessCoordinate& shift)
+    {
+        location.character -= shift.character;
+        location.integer -= shift.integer;
+        return location;
+    }
 }
