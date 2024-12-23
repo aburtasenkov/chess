@@ -35,6 +35,15 @@ namespace chess_notation
             integer = i;
         }
 
+        bool is_valid()
+        {
+            if (!(MIN_INDEX_HORIZONTAL <= character && character <= MAX_INDEX_HORIZONTAL))
+                return false;
+            if (!(MIN_INDEX_VERTICAL <= integer && integer <= MAX_INDEX_VERTICAL))
+                return false;
+            return true;
+        }
+
         void assert_data()
         {
             if (!(MIN_INDEX_HORIZONTAL <= character && character <= MAX_INDEX_HORIZONTAL))
