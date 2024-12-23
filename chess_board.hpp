@@ -105,7 +105,6 @@ namespace lmn
             void append_legalmoves_rook_vertical(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
             void append_knight_move(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_bishop_diagonal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
-            void append_legalmoves_queen(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
             void append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
 
     };
@@ -263,12 +262,6 @@ void lmn::Legalmoves::append_bishop_diagonal(cbn::coordinate_container& legal_mo
     return;
 }
 
-void lmn::Legalmoves::append_legalmoves_queen(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
-{
-    // todo, use rook and bishop functions
-    return;
-}
-
 void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
 {
     // todo
@@ -282,14 +275,23 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 
     cbn::coordinate_container legal_moves{};
 
-    if (piece_info.type == cbn::Piece_type::Pawn)
-        append_legalmoves_pawn(legal_moves, piece_info, location);
-
-    else if (piece_info.type == cbn::Piece_type::Rook)
+    if (piece_info.type == cbn::Piece_type::Rook || piece_info.type == cbn::Piece_type::Queen)
     {
         append_legalmoves_rook_horizontal(legal_moves, piece_info, location);
         append_legalmoves_rook_vertical(legal_moves, piece_info, location);
     }
+
+    if (piece_info.type == cbn::Piece_type::Bishop || piece_info.type == cbn::Piece_type::Queen)
+    {
+        auto offsets = generate_mixes(cbn::BISHOP_OFFSET, cbn::BISHOP_OFFSET);  // mixes of all possible values for diagonals
+        for (const auto& [offset_x, offset_y] : offsets)
+        {
+            append_bishop_diagonal(legal_moves, piece_info, location, offset_x, offset_y);
+        }
+    }
+
+    else if (piece_info.type == cbn::Piece_type::Pawn)
+        append_legalmoves_pawn(legal_moves, piece_info, location);
 
     else if (piece_info.type == cbn::Piece_type::Knight)
     {
@@ -302,20 +304,6 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
         {
             append_knight_move(legal_moves, piece_info, location, offset_x, offset_y);
         }
-    }
-
-    else if (piece_info.type == cbn::Piece_type::Bishop)
-    {
-        auto offsets = generate_mixes(cbn::BISHOP_OFFSET, cbn::BISHOP_OFFSET);  // mixes of all possible values for diagonals
-        for (const auto& [offset_x, offset_y] : offsets)
-        {
-            append_bishop_diagonal(legal_moves, piece_info, location, offset_x, offset_y);
-        }
-    }
-
-    else if (piece_info.type == cbn::Piece_type::Queen)
-    {
-        append_legalmoves_queen(legal_moves, piece_info, location);
     }
 
     else if (piece_info.type == cbn::Piece_type::King)
