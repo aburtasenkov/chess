@@ -264,7 +264,14 @@ void lmn::Legalmoves::append_bishop_diagonal(cbn::coordinate_container& legal_mo
 
 void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 {
-    // todo
+    cbn::ChessCoordinate current = location + cbn::ChessCoordinate{offset_x, offset_y};
+    if (current.is_valid())
+    {
+        if (cbn::is_empty(board[current]))
+        {
+            legal_moves.push_back(current);
+        }
+    }
     return;
 }
      
@@ -283,7 +290,7 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 
     if (piece_info.type == cbn::Piece_type::Bishop || piece_info.type == cbn::Piece_type::Queen)
     {
-        // create pairs of all offsets for bishop moves
+        // create pairs of all directions for bishops move
         auto offsets = lmn::generate_mixes(cbn::BISHOP_OFFSET, cbn::BISHOP_OFFSET);
         for (const auto& [offset_x, offset_y] : offsets)
         {
@@ -309,6 +316,7 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 
     else if (piece_info.type == cbn::Piece_type::King)
     {
+        // create pairs of all possible offsets for kings move
         auto offsets = lmn::generate_mixes(cbn::KING_OFFSET_DIAGONAL, cbn::KING_OFFSET_DIAGONAL);
         auto addition = lmn::generate_mixes(cbn::KING_OFFSET_DIAGONAL, cbn::KING_OFFSET_CROSSWAYS);
         offsets.insert(offsets.end(), addition.begin(), addition.end());
@@ -317,10 +325,8 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 
         for (const auto& [offset_x, offset_y] : offsets)
         {
-            std::cout << offset_x << offset_y << "\n";
+            append_legalmoves_king(legal_moves, piece_info, location, offset_x, offset_y);
         }
-
-        append_legalmoves_king(legal_moves, piece_info, location, 0, 0);
     }
 
     return legal_moves;
