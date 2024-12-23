@@ -235,10 +235,23 @@ void lmn::Legalmoves::append_legalmoves_rook_vertical(cbn::coordinate_container&
 
 void lmn::Legalmoves::append_legalmoves_knight(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 {
-    cbn::ChessCoordinate current = location + cbn::ChessCoordinate{offset_x, offset_y};
+    // create pairs of all offsets for knight moves
+    auto offsets = lmn::generate_mixes(offset_x, offset_y);
+    auto addition = lmn::generate_mixes(offset_y, offset_x);
+    offsets.insert(offsets.end(), addition.begin(), addition.end());
 
-    if (cbn::is_empty(board[current]))
-        legal_moves.push_back(current);
+    cbn::ChessCoordinate current;
+    
+    for (auto& [x, y] : offsets)
+    {
+        current = location + cbn::ChessCoordinate{x, y};
+
+        if (!current.is_valid())
+            continue;
+
+        if (cbn::is_empty(board[current]))
+            legal_moves.push_back(current);
+    }
 
     return;
 }
@@ -279,7 +292,7 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
 
     else if (piece_info.type == cbn::Piece_type::Knight)
     {
-        append_legalmoves_knight(legal_moves, piece_info, location, 0, 0);
+        append_legalmoves_knight(legal_moves, piece_info, location, cbn::KNIGHT_OFFSET_LONG_SIDE, cbn::KNIGHT_OFFSET_SHORT_SIDE);
     }
 
     else if (piece_info.type == cbn::Piece_type::Bishop)
@@ -306,18 +319,14 @@ cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>>
 {
     cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> mix;
 
-    for (int _ = 0; _ < 2; ++_)
+    for (int __ = 0; __ < 2; ++__)
     {
-        for (int __ = 0; __ < 2; ++__)
+        for (int ___ = 0; ___ < 2; ++___)
         {
-            for (int ___ = 0; ___ < 2; ++___)
-            {
-                mix.push_back(std::pair<int,int>{i1, i2});
-                i2 = -i2;
-            }
-            i1 = -i1;
+            mix.push_back(std::pair<int,int>{i1, i2});
+            i2 = -i2;
         }
-        std::swap(i1, i2);
+        i1 = -i1;
     }
 
     return mix;
