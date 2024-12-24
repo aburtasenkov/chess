@@ -96,4 +96,10 @@ namespace chess_board_constants
 
     const int ROOK_OFFSET_X = 1;
     const int ROOK_OFFSET_Y = 0;
+
+    std::map<cbn::Piece_color, cbn::Piece_color> enemy_color
+    {
+        {cbn::Piece_color::White, cbn::Piece_color::Black},
+        {cbn::Piece_color::Black, cbn::Piece_color::White}
+    };
 }
