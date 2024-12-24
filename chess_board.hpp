@@ -194,6 +194,12 @@ void lmn::Legalmoves::append_knight_move(cbn::coordinate_container& legal_moves,
 
     if (cbn::is_empty(board[current]))
         legal_moves.push_back(current);
+    else
+    {
+        cbn::Piece_data current_info = get_piece_info(current);
+        if (current_info.color == cbn::enemy_color.at(piece_info.color))
+            legal_moves.push_back(current);
+    }
 
     return;
 }
@@ -207,7 +213,12 @@ void lmn::Legalmoves::append_bishop_diagonal(cbn::coordinate_container& legal_mo
         if (cbn::is_empty(board[diagonal]))
             legal_moves.push_back(diagonal);
         else
+        {
+            cbn::Piece_data diagonal_info = get_piece_info(diagonal);
+            if (diagonal_info.color == cbn::enemy_color.at(piece_info.color))
+                legal_moves.push_back(diagonal);
             break;
+        }
 
         diagonal += cbn::ChessCoordinate{offset_x, offset_y};
     }
@@ -223,6 +234,12 @@ void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_mo
         if (cbn::is_empty(board[current]))
         {
             legal_moves.push_back(current);
+        }
+        else
+        {
+            cbn::Piece_data current_info = get_piece_info(current);
+            if (current_info.color == cbn::enemy_color.at(piece_info.color))
+                legal_moves.push_back(current);
         }
     }
     return;
