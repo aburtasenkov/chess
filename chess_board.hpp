@@ -172,7 +172,12 @@ void lmn::Legalmoves::append_legalmoves_rook(cbn::coordinate_container& legal_mo
         if (cbn::is_empty(board[current]))
             legal_moves.push_back(current);
         else
+        {
+            cbn::Piece_data current_info = get_piece_info(current);
+            if (current_info.color == cbn::enemy_color.at(piece_info.color))
+                legal_moves.push_back(current);
             break;
+        }
 
         current += cbn::ChessCoordinate{offset_x, offset_y};
     }
