@@ -100,7 +100,7 @@ namespace lmn
             const cbn::ChessBoard& board;
 
             cbn::Piece_data get_piece_info(const cbn::ChessCoordinate& location);
-            void append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
+            void append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_legalmoves_rook(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_knight_move(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_bishop_diagonal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
@@ -136,36 +136,35 @@ cbn::Piece_data lmn::Legalmoves::get_piece_info(const cbn::ChessCoordinate& loca
     return piece_info;
 }
 
-void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location)
+void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 // append legal_moves with possible moves for pawns
 {
     // Check for en passant, TODO
 
-    cbn::ChessCoordinate front = location - cbn::ChessCoordinate{0,1};    // coordinate in front of pawn
-    cbn::ChessCoordinate front_2 = front - cbn::ChessCoordinate{0,1};     // coordinate 2 squares in front of pawn
-    cbn::Piece_color curr_color = cbn::Piece_color::White;
-    int starting_row = cbn::RANK_7_INDEX;
+    cbn::ChessCoordinate front, front_2;
+    int starting_row;
 
-    // Do once for white, once for black
-    for (int _ = 0; _ < 2; ++_)
+    if (piece_info.color == cbn::Piece_color::White)
     {
-        if (piece_info.color == curr_color)
-        {
-            if (cbn::is_empty(board[front]))
-            {
-                legal_moves.push_back(front);
-                
-                if (location.integer == starting_row && cbn::is_empty(board[front_2]))    // pawns on starting row can move 2 squares
-                    legal_moves.push_back(front_2);
-            }
-            return;
-        }
-
-        curr_color = cbn::Piece_color::Black;
-        starting_row = cbn::RANK_2_INDEX;
-        front = location + cbn::ChessCoordinate{0,1};
-        front_2 = front + cbn::ChessCoordinate{0,1};
+        starting_row = cbn::RANK_7_INDEX;
+        front = location - cbn::ChessCoordinate{offset_x, offset_y};   // coordinate in front of pawn
+        front_2 = front - cbn::ChessCoordinate{offset_x, offset_y};    // coordinate 2 squares in front of pawn
     }
+    else
+    {
+        starting_row = cbn::RANK_2_INDEX;
+        front = location + cbn::ChessCoordinate{offset_x, offset_y};   // coordinate in front of pawn
+        front_2 = front + cbn::ChessCoordinate{offset_x, offset_y};    // coordinate 2 squares in front of pawn
+    }
+
+    if (cbn::is_empty(board[front]))
+    {
+        legal_moves.push_back(front);
+        
+        if (location.integer == starting_row && cbn::is_empty(board[front]) && cbn::is_empty(board[front_2]))    // pawns on starting row can move 2 squares
+            legal_moves.push_back(front_2);
+    }
+
     return;
 }
 
@@ -260,7 +259,9 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
     }
 
     else if (piece_info.type == cbn::Piece_type::Pawn)
-        append_legalmoves_pawn(legal_moves, piece_info, location);
+    {
+        append_legalmoves_pawn(legal_moves, piece_info, location, cbn::PAWN_OFFSET_X, cbn::PAWN_OFFSET_Y);
+    }
 
     else if (piece_info.type == cbn::Piece_type::Knight)
     {
@@ -270,9 +271,7 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
         offsets.insert(offsets.end(), extension.begin(), extension.end());
 
         for (const auto& [offset_x, offset_y] : offsets)
-        {
             append_knight_move(legal_moves, piece_info, location, offset_x, offset_y);
-        }
     }
 
     else if (piece_info.type == cbn::Piece_type::King)
@@ -285,9 +284,7 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
         offsets.insert(offsets.end(), extension.begin(), extension.end());
 
         for (const auto& [offset_x, offset_y] : offsets)
-        {
             append_legalmoves_king(legal_moves, piece_info, location, offset_x, offset_y);
-        }
     }
 
     return legal_moves;
