@@ -82,11 +82,6 @@ bool cbn::move_is_legal(const cbn::coordinate_container& legal_moves, const cbn:
 
 namespace lmn
 {
-    auto plus = [](int i, int ii) { return i + ii; };
-    auto minus = [](int i, int ii) { return i - ii; };
-    auto smaller_equal = [](int left, int right) { return left <= right; };
-    auto bigger_equal = [](int left, int right) { return left >= right; };
-
     class Legalmoves
     {
         public:
