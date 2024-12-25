@@ -106,7 +106,6 @@ namespace chess_board_constants
         {Piece_color::Black, Piece_color::White}
     };
 
-    const int PAWN_EAT_OFFSET_X_RIGHT = 1;
-    const int PAWN_EAT_OFFSET_X_LEFT = -1;
+    const int PAWN_EAT_OFFSET_X = 1;    // constant is vayring for eating, may be 1 may be -1
     const int PAWN_EAT_OFFSET_Y = -1;
 }
