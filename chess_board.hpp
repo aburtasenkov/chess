@@ -168,8 +168,11 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
 
     for (const auto& square : arr)
     {
-        if (!cbn::is_empty(board[square]) && is_enemy(location, square))
-            legal_moves.push_back(square);
+        if (square.is_valid())
+        {
+            if (!cbn::is_empty(board[square]) && is_enemy(location, square))
+                legal_moves.push_back(square);
+        }
     }
 
     return;

@@ -41,7 +41,7 @@ namespace chess_notation
             integer = c.integer;
         }
 
-        bool is_valid()
+        bool is_valid() const
         {
             if (!(MIN_INDEX_HORIZONTAL <= character && character <= MAX_INDEX_HORIZONTAL))
                 return false;
@@ -50,7 +50,7 @@ namespace chess_notation
             return true;
         }
 
-        void assert_data()
+        void assert_data() const
         {
             if (!(MIN_INDEX_HORIZONTAL <= character && character <= MAX_INDEX_HORIZONTAL))
                 throw BadInputError;
@@ -103,8 +103,32 @@ namespace chess_notation
             if (x.integer < y.integer)
                 return true;
         }
-        
+
         return false;
+    }
+
+    ChessCoordinate operator+(const ChessCoordinate& location, const ChessCoordinate& relocation)
+    {
+        return ChessCoordinate{location.character + relocation.character, location.integer + relocation.integer};
+    }
+
+    ChessCoordinate operator-(const ChessCoordinate& location, const ChessCoordinate& relocation)
+    {
+        return ChessCoordinate{location.character - relocation.character, location.integer - relocation.integer};
+    }
+
+    ChessCoordinate& operator+=(ChessCoordinate& location, const ChessCoordinate& shift)
+    {
+        location.character += shift.character;
+        location.integer += shift.integer;
+        return location;
+    }
+
+    ChessCoordinate& operator-=(ChessCoordinate& location, const ChessCoordinate& shift)
+    {
+        location.character -= shift.character;
+        location.integer -= shift.integer;
+        return location;
     }
 
     struct ChessNotation
@@ -136,28 +160,4 @@ namespace chess_notation
         notation.to.assert_data();
         return is; 
     } 
-
-    ChessCoordinate operator+(const ChessCoordinate& location, const ChessCoordinate& relocation)
-    {
-        return ChessCoordinate{location.character + relocation.character, location.integer + relocation.integer};
-    }
-
-    ChessCoordinate operator-(const ChessCoordinate& location, const ChessCoordinate& relocation)
-    {
-        return ChessCoordinate{location.character - relocation.character, location.integer - relocation.integer};
-    }
-
-    ChessCoordinate& operator+=(ChessCoordinate& location, const ChessCoordinate& shift)
-    {
-        location.character += shift.character;
-        location.integer += shift.integer;
-        return location;
-    }
-
-    ChessCoordinate& operator-=(ChessCoordinate& location, const ChessCoordinate& shift)
-    {
-        location.character -= shift.character;
-        location.integer -= shift.integer;
-        return location;
-    }
 }
