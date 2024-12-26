@@ -25,8 +25,6 @@ namespace cbn
 
             void restore();
 
-            void move(const ChessNotation& xy);
-
             value_type& operator[](const ChessCoordinate& location);
 
             const value_type& operator[](const ChessCoordinate& location) const;
@@ -34,8 +32,10 @@ namespace cbn
             ChessNotation& last_move();
             const ChessNotation& last_move() const;
 
+            void move(const ChessNotation& xy);
+
         private:
-            void move_piece(const ChessNotation& movement);
+            void move_piece(const ChessNotation& move);
 
             bn::Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
             notation_container move_history;
@@ -438,26 +438,31 @@ bool lmn::Legalmoves::is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessC
 
 /*************************Functions requiring Legalmoves and Chessboard****************************/
 
-void cbn::ChessBoard::move(const cbn::ChessNotation& movement)
-// move a piece on the chess board from movement.x to movement.y
+void cbn::ChessBoard::move(const cbn::ChessNotation& move)
+// move a piece on the chess board from move.x to move.y
 {
     lmn::Legalmoves legal{*this};
     
-    auto legal_moves = legal(movement.from);
+    auto legal_moves = legal(move.from);
 
-    if (move_is_legal(legal_moves, movement))
+    if (move_is_legal(legal_moves, move))
     {
-        move_piece(movement);
+        if (!move_history.empty())
+        {
+            auto last = last_move();
+            if (legal.is_en_passent(move.from, last.to))
+                operator[](last.to) = EMPTY_SQUARE; 
+        }
+        move_piece(move);
     }
     else 
         throw cbn::IllegalMove;
 }
 
-void cbn::ChessBoard::move_piece(const ChessNotation& movement)
+void cbn::ChessBoard::move_piece(const ChessNotation& move)
 {
-    cbn::value_type& square_ref = board[movement.from.integer][movement.from.character];
-    board[movement.to.integer][movement.to.character] = square_ref;
-    square_ref = EMPTY_SQUARE;
+    operator[](move.to) = operator[](move.from);
+    operator[](move.from)= EMPTY_SQUARE;
 
-    move_history.push_back(movement);
+    move_history.push_back(move);
 }
