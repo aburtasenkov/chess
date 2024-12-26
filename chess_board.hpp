@@ -31,7 +31,8 @@ namespace cbn
 
             const value_type& operator[](const ChessCoordinate& location) const;
 
-            const ChessNotation& last_move();
+            ChessNotation& last_move();
+            const ChessNotation& last_move() const;
 
         private:
             void move_piece(const ChessNotation& movement);
@@ -83,7 +84,12 @@ bool cbn::move_is_legal(const cbn::coordinate_container& legal_moves, const cbn:
     return (std::find(legal_moves.begin(), legal_moves.end(), movement.to) != legal_moves.end());
 }
 
-const cbn::ChessNotation& cbn::ChessBoard::last_move()
+cbn::ChessNotation& cbn::ChessBoard::last_move()
+{
+    return move_history.back();
+}
+
+const cbn::ChessNotation& cbn::ChessBoard::last_move() const
 {
     return move_history.back();
 }
@@ -104,11 +110,16 @@ namespace lmn
         private:
             const cbn::ChessBoard& board;
 
-            cbn::Piece_data get_piece_info(const cbn::ChessCoordinate& location);
+            const cbn::Piece_data get_piece_info(const cbn::ChessCoordinate& location) const;
             void append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
+            void append_en_passent(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
+            
             void append_legalmoves_rook(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
+            
             void append_knight_move(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
+            
             void append_bishop_diagonal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
+            
             void append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
 
             bool is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2);
@@ -119,7 +130,7 @@ namespace lmn
 
 /*******************************************************************Function definition*********************************************************************/
 
-cbn::Piece_data lmn::Legalmoves::get_piece_info(const cbn::ChessCoordinate& location)
+const cbn::Piece_data lmn::Legalmoves::get_piece_info(const cbn::ChessCoordinate& location) const
 {
     cbn::Piece_data piece_info;
 
@@ -147,7 +158,7 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
 {
     // Check for en passant, TODO
 
-    cbn::ChessCoordinate front, front_2, potential_square_1, potential_square_2;
+    cbn::ChessCoordinate front, front_2, potential_square_1, potential_square_2, en_pessant_1, en_pessant_2;
     int starting_row;
 
     if (piece_info.color == cbn::Piece_color::White)
@@ -176,6 +187,7 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
             legal_moves.push_back(front_2);
     }
 
+    // Check for eating other pieces
     for (const auto& square : arr)
     {
         if (square.is_valid())
@@ -183,6 +195,51 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
             if (!cbn::is_empty(board[square]) && is_enemy(location, square))
                 legal_moves.push_back(square);
         }
+    }
+
+    append_en_passent(legal_moves, piece_info, location, offset_x, offset_y);
+
+    return;
+}
+
+void lmn::Legalmoves::append_en_passent(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
+{
+    cbn::ChessCoordinate en_pessant_1 = location + cbn::ChessCoordinate{-offset_y, 0};
+    cbn::ChessCoordinate en_pessant_2 = location + cbn::ChessCoordinate{offset_y, 0};
+
+    const std::array<cbn::ChessCoordinate, 2> en_pessant = {en_pessant_1, en_pessant_2};
+
+    // check for en pessants
+    for (const auto& square : en_pessant)
+    {
+        if (!square.is_valid())
+            continue;
+
+        if (board[square] == cbn::EMPTY_SQUARE)
+            continue;
+
+        if (!is_enemy(location, square))
+            continue;
+
+        const cbn::Piece_data square_info = get_piece_info(square);
+
+        if (piece_info.type != square_info.type) // need to be of same type
+            continue;
+        
+        const cbn::ChessNotation& last_move = board.last_move();
+
+        // same character rank and move difference is 2
+        if (!(last_move.from.character == last_move.to.character && abs(last_move.from.integer - last_move.to.integer) == 2))
+            continue;
+        
+        cbn::ChessCoordinate en_pessant_coordinate;
+
+        if (piece_info.color == cbn::Piece_color::White)
+            en_pessant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, -offset_y};
+        else
+            en_pessant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, offset_y};
+
+        legal_moves.push_back(en_pessant_coordinate);
     }
 
     return;
@@ -269,7 +326,7 @@ void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_mo
 const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoordinate& location)
 // return a container containing all legal moves for kind located at location
 {
-    cbn::Piece_data piece_info = get_piece_info(location);
+    const cbn::Piece_data piece_info = get_piece_info(location);
 
     cbn::coordinate_container legal_moves{};
 
@@ -356,8 +413,8 @@ cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>>
 
 bool lmn::Legalmoves::is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2)
 {
-    cbn::Piece_data d1 = get_piece_info(l1);
-    cbn::Piece_data d2 = get_piece_info(l2);
+    const cbn::Piece_data d1 = get_piece_info(l1);
+    const cbn::Piece_data d2 = get_piece_info(l2);
 
     return d1.color != d2.color;
 }
