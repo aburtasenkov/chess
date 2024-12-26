@@ -1,4 +1,5 @@
 #include <map>
+#include <array>
 #include "Board.hpp"
 
 namespace chess_board_constants
