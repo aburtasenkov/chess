@@ -106,11 +106,16 @@ namespace lmn
             
             // calculate all legal moves for piece at location
             const cbn::coordinate_container operator()(const cbn::ChessCoordinate& location);
-            
+
+            const cbn::Piece_data get_piece_info(const cbn::ChessCoordinate& location) const;
+
+            bool is_en_passent(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const;
+
+            bool is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2) const;
+
         private:
             const cbn::ChessBoard& board;
 
-            const cbn::Piece_data get_piece_info(const cbn::ChessCoordinate& location) const;
             void append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_en_passent(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             
@@ -122,13 +127,36 @@ namespace lmn
             
             void append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
 
-            bool is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2);
     };
 
     cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> generate_mixes(int i1, int i2);
 };
 
 /*******************************************************************Function definition*********************************************************************/
+
+
+bool lmn::Legalmoves::is_en_passent(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const
+{
+    if (board[square] == cbn::EMPTY_SQUARE)
+        return false;
+
+    if (!is_enemy(location, square))
+        return false;
+
+    const cbn::Piece_data piece_info = get_piece_info(location);
+    const cbn::Piece_data square_info = get_piece_info(square);
+
+    if (piece_info.type != square_info.type) // need to be of same type
+        return false;
+    
+    const cbn::ChessNotation& last_move = board.last_move();
+
+    // same character rank and move difference is 2
+    if (!(last_move.from.character == last_move.to.character && abs(last_move.from.integer - last_move.to.integer) == 2))
+        return false;
+
+    return true;
+}
 
 const cbn::Piece_data lmn::Legalmoves::get_piece_info(const cbn::ChessCoordinate& location) const
 {
@@ -215,24 +243,12 @@ void lmn::Legalmoves::append_en_passent(cbn::coordinate_container& legal_moves, 
         if (!square.is_valid())
             continue;
 
-        if (board[square] == cbn::EMPTY_SQUARE)
+        if (!is_en_passent(location, square))
             continue;
 
-        if (!is_enemy(location, square))
-            continue;
-
-        const cbn::Piece_data square_info = get_piece_info(square);
-
-        if (piece_info.type != square_info.type) // need to be of same type
-            continue;
-        
-        const cbn::ChessNotation& last_move = board.last_move();
-
-        // same character rank and move difference is 2
-        if (!(last_move.from.character == last_move.to.character && abs(last_move.from.integer - last_move.to.integer) == 2))
-            continue;
-        
         cbn::ChessCoordinate en_pessant_coordinate;
+
+        const cbn::ChessNotation& last_move = board.last_move();
 
         if (piece_info.color == cbn::Piece_color::White)
             en_pessant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, -offset_y};
@@ -412,7 +428,7 @@ cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>>
     return mix;
 }
 
-bool lmn::Legalmoves::is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2)
+bool lmn::Legalmoves::is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2) const
 {
     const cbn::Piece_data d1 = get_piece_info(l1);
     const cbn::Piece_data d2 = get_piece_info(l2);
