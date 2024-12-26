@@ -107,6 +107,35 @@ namespace chess_notation
         return false;
     }
 
+    bool operator>(const ChessCoordinate& x, const ChessCoordinate& y)
+    {
+        if (x.character > y.character)
+            return true;
+        else if (x.character == y.character)
+        {
+            if (x.integer > y.integer)
+                return true;
+        }
+
+        return false;
+    }
+
+    bool operator<=(const ChessCoordinate& x, const ChessCoordinate& y)
+    {
+        if (x == y)
+            return true;
+        else 
+            return x < y;
+    }
+
+    bool operator>=(const ChessCoordinate& x, const ChessCoordinate& y)
+    {
+        if (x == y)
+            return true;
+        else 
+            return x > y;
+    }
+
     ChessCoordinate operator+(const ChessCoordinate& location, const ChessCoordinate& relocation)
     {
         return ChessCoordinate{location.character + relocation.character, location.integer + relocation.integer};
