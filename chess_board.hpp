@@ -312,6 +312,8 @@ const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoor
             append_legalmoves_king(legal_moves, piece_info, location, offset_x, offset_y);
     }
 
+    std::sort(legal_moves.begin(), legal_moves.end());
+
     return legal_moves;
 }
 

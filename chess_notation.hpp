@@ -94,6 +94,19 @@ namespace chess_notation
         return !operator==(x,y);
     }
 
+    bool operator<(const ChessCoordinate& x, const ChessCoordinate& y)
+    {
+        if (x.character < y.character)
+            return true;
+        else if (x.character == y.character)
+        {
+            if (x.integer < y.integer)
+                return true;
+        }
+        
+        return false;
+    }
+
     struct ChessNotation
     {
         ChessNotation()
