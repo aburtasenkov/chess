@@ -9,6 +9,7 @@ namespace cbn
     using namespace chess_notation;
     using namespace chess_board_constants;
     using coordinate_container = container_type<ChessCoordinate, allocator_type<ChessCoordinate>>;
+    using notation_container = container_type<ChessNotation, allocator_type<ChessNotation>>;
 
     struct Piece_data
     {
@@ -31,8 +32,10 @@ namespace cbn
             const value_type& operator[](const ChessCoordinate& location) const;
 
         private:
-            bn::Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
+            void move_piece(const ChessNotation& movement);
 
+            bn::Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
+            notation_container move_history;
     };
 
     /****************************************************Function declaration************************************************************************************/
@@ -363,10 +366,17 @@ void cbn::ChessBoard::move(const cbn::ChessNotation& movement)
 
     if (move_is_legal(legal_moves, movement))
     {
-        cbn::value_type& square_ref = board[movement.from.integer][movement.from.character];
-        board[movement.to.integer][movement.to.character] = square_ref;
-        square_ref = EMPTY_SQUARE;
+        move_piece(movement);
     }
     else 
         throw cbn::IllegalMove;
+}
+
+void cbn::ChessBoard::move_piece(const ChessNotation& movement)
+{
+    cbn::value_type& square_ref = board[movement.from.integer][movement.from.character];
+    board[movement.to.integer][movement.to.character] = square_ref;
+    square_ref = EMPTY_SQUARE;
+
+    move_history.push_back(movement);
 }
