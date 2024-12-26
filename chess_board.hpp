@@ -1,5 +1,4 @@
 #include <vector>
-#include <array>
 #include <algorithm>
 #include "chess_notation.hpp"
 #include "chess_board_constants.hpp"
@@ -109,7 +108,7 @@ namespace lmn
 
             const cbn::Piece_data get_piece_info(const cbn::ChessCoordinate& location) const;
 
-            bool is_en_passent(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const;
+            bool is_en_passant(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const;
 
             bool is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2) const;
 
@@ -117,7 +116,8 @@ namespace lmn
             const cbn::ChessBoard& board;
 
             void append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
-            void append_en_passent(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
+            void append_legalmoves_pawn_eating(cbn::coordinate_container& legal_moves, const cbn::ChessCoordinate& location, std::initializer_list<cbn::ChessCoordinate> list);
+            void append_en_passant(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             
             void append_legalmoves_rook(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             
@@ -135,7 +135,7 @@ namespace lmn
 /*******************************************************************Function definition*********************************************************************/
 
 
-bool lmn::Legalmoves::is_en_passent(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const
+bool lmn::Legalmoves::is_en_passant(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const
 {
     if (board[square] == cbn::EMPTY_SQUARE)
         return false;
@@ -184,9 +184,7 @@ const cbn::Piece_data lmn::Legalmoves::get_piece_info(const cbn::ChessCoordinate
 void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 // append legal_moves with possible moves for pawns
 {
-    // Check for en passant, TODO
-
-    cbn::ChessCoordinate front, front_2, potential_square_1, potential_square_2, en_pessant_1, en_pessant_2;
+    cbn::ChessCoordinate front, front_2;
     int starting_row;
 
     if (piece_info.color == cbn::Piece_color::White)
@@ -202,10 +200,11 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
         front_2 = front + cbn::ChessCoordinate{offset_x, offset_y};    // coordinate 2 squares in front of pawn
     }
 
-    potential_square_1 = front + cbn::ChessCoordinate{-offset_y, 0};
-    potential_square_2 = front + cbn::ChessCoordinate{offset_y, 0};
-
-    const std::array<cbn::ChessCoordinate, 2> arr = {potential_square_1, potential_square_2};
+    const cbn::coordinate_container potential_squares = 
+    {
+        front + cbn::ChessCoordinate{-offset_y, 0}, 
+        front + cbn::ChessCoordinate{offset_y, 0}
+    };
 
     if (cbn::is_empty(board[front]))
     {
@@ -216,7 +215,19 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
     }
 
     // Check for eating other pieces
-    for (const auto& square : arr)
+    append_legalmoves_pawn_eating(legal_moves, location, 
+                            {
+                            front + cbn::ChessCoordinate{-offset_y, 0}, 
+                            front + cbn::ChessCoordinate{offset_y, 0}
+                            });
+    append_en_passant(legal_moves, piece_info, location, offset_x, offset_y);
+
+    return;
+}
+
+void lmn::Legalmoves::append_legalmoves_pawn_eating(cbn::coordinate_container& legal_moves, const cbn::ChessCoordinate& location, std::initializer_list<cbn::ChessCoordinate> list)
+{
+    for (const auto& square : list)
     {
         if (!square.is_valid())
             continue;
@@ -224,38 +235,33 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
         if (!cbn::is_empty(board[square]) && is_enemy(location, square))
             legal_moves.push_back(square);
     }
-
-    append_en_passent(legal_moves, piece_info, location, offset_x, offset_y);
-
     return;
 }
 
-void lmn::Legalmoves::append_en_passent(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
+void lmn::Legalmoves::append_en_passant(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 {
-    cbn::ChessCoordinate en_pessant_1 = location + cbn::ChessCoordinate{-offset_y, 0};
-    cbn::ChessCoordinate en_pessant_2 = location + cbn::ChessCoordinate{offset_y, 0};
+    cbn::ChessCoordinate en_passant_1 = location + cbn::ChessCoordinate{-offset_y, offset_x};
+    cbn::ChessCoordinate en_passant_2 = location + cbn::ChessCoordinate{offset_y, offset_x};
 
-    const std::array<cbn::ChessCoordinate, 2> en_pessant = {en_pessant_1, en_pessant_2};
-
-    // check for en pessants
-    for (const auto& square : en_pessant)
+    // check for en passants
+    for (const auto& square : {en_passant_1, en_passant_2})
     {
         if (!square.is_valid())
             continue;
 
-        if (!is_en_passent(location, square))
+        if (!is_en_passant(location, square))
             continue;
 
-        cbn::ChessCoordinate en_pessant_coordinate;
+        cbn::ChessCoordinate en_passant_coordinate;
 
         const cbn::ChessNotation& last_move = board.last_move();
 
         if (piece_info.color == cbn::Piece_color::White)
-            en_pessant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, -offset_y};
+            en_passant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, -offset_y};
         else
-            en_pessant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, offset_y};
+            en_passant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, offset_y};
 
-        legal_moves.push_back(en_pessant_coordinate);
+        legal_moves.push_back(en_passant_coordinate);
     }
 
     return;
@@ -450,7 +456,7 @@ void cbn::ChessBoard::move(const cbn::ChessNotation& move)
         if (!move_history.empty())
         {
             auto last = last_move();
-            if (legal.is_en_passent(move.from, last.to))
+            if (legal.is_en_passant(move.from, last.to))
                 operator[](last.to) = EMPTY_SQUARE; 
         }
         move_piece(move);
