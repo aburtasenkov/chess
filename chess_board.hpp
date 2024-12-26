@@ -101,6 +101,7 @@ namespace lmn
             void append_bishop_diagonal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
 
+            bool is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2);
     };
 
     cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> generate_mixes(int i1, int i2);
@@ -136,7 +137,7 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
 {
     // Check for en passant, TODO
 
-    cbn::ChessCoordinate front, front_2;
+    cbn::ChessCoordinate front, front_2, potential_square_1, potential_square_2;
     int starting_row;
 
     if (piece_info.color == cbn::Piece_color::White)
@@ -152,12 +153,23 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
         front_2 = front + cbn::ChessCoordinate{offset_x, offset_y};    // coordinate 2 squares in front of pawn
     }
 
+    potential_square_1 = front + cbn::ChessCoordinate{-offset_y, 0};
+    potential_square_2 = front + cbn::ChessCoordinate{offset_y, 0};
+
+    const std::array<cbn::ChessCoordinate, 2> arr = {potential_square_1, potential_square_2};
+
     if (cbn::is_empty(board[front]))
     {
         legal_moves.push_back(front);
         
-        if (location.integer == starting_row && cbn::is_empty(board[front]) && cbn::is_empty(board[front_2]))    // pawns on starting row can move 2 squares
+        if (location.integer == starting_row && cbn::is_empty(board[front_2]))    // pawns on starting row can move 2 squares
             legal_moves.push_back(front_2);
+    }
+
+    for (const auto& square : arr)
+    {
+        if (!cbn::is_empty(board[square]) && is_enemy(location, square))
+            legal_moves.push_back(square);
     }
 
     return;
@@ -329,6 +341,14 @@ cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>>
     }
 
     return mix;
+}
+
+bool lmn::Legalmoves::is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2)
+{
+    cbn::Piece_data d1 = get_piece_info(l1);
+    cbn::Piece_data d2 = get_piece_info(l2);
+
+    return d1.color != d2.color;
 }
 
 /*************************Functions requiring Legalmoves and Chessboard****************************/
