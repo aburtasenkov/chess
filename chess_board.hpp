@@ -185,8 +185,7 @@ void lmn::Legalmoves::append_legalmoves_rook(cbn::coordinate_container& legal_mo
             legal_moves.push_back(current);
         else
         {
-            cbn::Piece_data current_info = get_piece_info(current);
-            if (current_info.color == cbn::enemy_color.at(piece_info.color))
+            if (is_enemy(location, current))
                 legal_moves.push_back(current);
             break;
         }
@@ -208,8 +207,7 @@ void lmn::Legalmoves::append_knight_move(cbn::coordinate_container& legal_moves,
         legal_moves.push_back(current);
     else
     {
-        cbn::Piece_data current_info = get_piece_info(current);
-        if (current_info.color == cbn::enemy_color.at(piece_info.color))
+        if (is_enemy(location, current))
             legal_moves.push_back(current);
     }
 
@@ -226,8 +224,7 @@ void lmn::Legalmoves::append_bishop_diagonal(cbn::coordinate_container& legal_mo
             legal_moves.push_back(diagonal);
         else
         {
-            cbn::Piece_data diagonal_info = get_piece_info(diagonal);
-            if (diagonal_info.color == cbn::enemy_color.at(piece_info.color))
+            if (is_enemy(location, diagonal))
                 legal_moves.push_back(diagonal);
             break;
         }
@@ -249,8 +246,7 @@ void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_mo
         }
         else
         {
-            cbn::Piece_data current_info = get_piece_info(current);
-            if (current_info.color == cbn::enemy_color.at(piece_info.color))
+            if (is_enemy(location, current))
                 legal_moves.push_back(current);
         }
     }

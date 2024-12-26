@@ -99,10 +99,4 @@ namespace chess_board_constants
 
     const int PAWN_OFFSET_X = 0;
     const int PAWN_OFFSET_Y = 1;
-
-    const std::map<const Piece_color, const Piece_color> enemy_color
-    {
-        {Piece_color::White, Piece_color::Black},
-        {Piece_color::Black, Piece_color::White}
-    };
 }
