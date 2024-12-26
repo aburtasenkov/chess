@@ -31,6 +31,8 @@ namespace cbn
 
             const value_type& operator[](const ChessCoordinate& location) const;
 
+            const ChessNotation& last_move();
+
         private:
             void move_piece(const ChessNotation& movement);
 
@@ -79,6 +81,11 @@ bool cbn::is_empty(const value_type& val)
 bool cbn::move_is_legal(const cbn::coordinate_container& legal_moves, const cbn::ChessNotation& movement)
 {
     return (std::find(legal_moves.begin(), legal_moves.end(), movement.to) != legal_moves.end());
+}
+
+const cbn::ChessNotation& cbn::ChessBoard::last_move()
+{
+    return move_history.back();
 }
 
 /****************************************************************************************************************************************/
