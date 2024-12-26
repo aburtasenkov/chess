@@ -457,7 +457,10 @@ void cbn::ChessBoard::move(const cbn::ChessNotation& move)
         {
             auto last = last_move();
             if (legal.is_en_passant(move.from, last.to))
-                operator[](last.to) = EMPTY_SQUARE; 
+            {
+                if (last.to.character == move.to.character)
+                    operator[](last.to) = EMPTY_SQUARE; 
+            }
         }
         move_piece(move);
     }
