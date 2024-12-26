@@ -190,11 +190,11 @@ void lmn::Legalmoves::append_legalmoves_pawn(cbn::coordinate_container& legal_mo
     // Check for eating other pieces
     for (const auto& square : arr)
     {
-        if (square.is_valid())
-        {
-            if (!cbn::is_empty(board[square]) && is_enemy(location, square))
-                legal_moves.push_back(square);
-        }
+        if (!square.is_valid())
+            continue;
+
+        if (!cbn::is_empty(board[square]) && is_enemy(location, square))
+            legal_moves.push_back(square);
     }
 
     append_en_passent(legal_moves, piece_info, location, offset_x, offset_y);
@@ -308,18 +308,19 @@ void lmn::Legalmoves::append_bishop_diagonal(cbn::coordinate_container& legal_mo
 void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 {
     cbn::ChessCoordinate current = location + cbn::ChessCoordinate{offset_x, offset_y};
-    if (current.is_valid())
+    if (!current.is_valid())
+        return;
+
+    if (cbn::is_empty(board[current]))
     {
-        if (cbn::is_empty(board[current]))
-        {
-            legal_moves.push_back(current);
-        }
-        else
-        {
-            if (is_enemy(location, current))
-                legal_moves.push_back(current);
-        }
+        legal_moves.push_back(current);
     }
+    else
+    {
+        if (is_enemy(location, current))
+            legal_moves.push_back(current);
+    }
+
     return;
 }
      
