@@ -265,8 +265,8 @@ void lmn::Legalmoves::append_legalmoves_pawn_eating(cbn::coordinate_container& l
 
 void lmn::Legalmoves::append_en_passant(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y)
 {
-    cbn::ChessCoordinate en_passant_1 = location + cbn::ChessCoordinate{-offset_y, offset_x};
-    cbn::ChessCoordinate en_passant_2 = location + cbn::ChessCoordinate{offset_y, offset_x};
+    cbn::ChessCoordinate en_passant_1 = location + cbn::ChessCoordinate{-offset_y, 0};
+    cbn::ChessCoordinate en_passant_2 = location + cbn::ChessCoordinate{offset_y, 0};
 
     // check for en passants
     for (const auto& square : {en_passant_1, en_passant_2})
@@ -282,9 +282,9 @@ void lmn::Legalmoves::append_en_passant(cbn::coordinate_container& legal_moves, 
         const cbn::ChessNotation& last_move = board.last_move();
 
         if (piece_info.color == cbn::Piece_color::White)
-            en_passant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, -offset_y};
+            en_passant_coordinate = last_move.to + cbn::ChessCoordinate{0, -offset_y};  // move up from last move
         else
-            en_passant_coordinate = last_move.to + cbn::ChessCoordinate{offset_x, offset_y};
+            en_passant_coordinate = last_move.to + cbn::ChessCoordinate{0, offset_y};   // move down from last move
 
         legal_moves.push_back(en_passant_coordinate);
     }
@@ -298,14 +298,13 @@ void lmn::Legalmoves::append_legalmoves_rook(cbn::coordinate_container& legal_mo
 
     while (current.is_valid())
     {
-        if (cbn::is_empty(board[current]))
+        // can go to empty coordinates and eat enemies
+        if (cbn::is_empty(board[current]) || is_enemy(location, current))
             legal_moves.push_back(current);
-        else
-        {
-            if (is_enemy(location, current))
-                legal_moves.push_back(current);
+
+        // but if its an enemy -> break the loop
+        if (is_enemy(location, current))
             break;
-        }
 
         current += cbn::ChessCoordinate{offset_x, offset_y};
     }
@@ -320,13 +319,8 @@ void lmn::Legalmoves::append_knight_move(cbn::coordinate_container& legal_moves,
     if (!current.is_valid())
         return;
 
-    if (cbn::is_empty(board[current]))
+    if (cbn::is_empty(board[current]) || is_enemy(location, current))
         legal_moves.push_back(current);
-    else
-    {
-        if (is_enemy(location, current))
-            legal_moves.push_back(current);
-    }
 
     return;
 }
@@ -337,14 +331,13 @@ void lmn::Legalmoves::append_bishop_diagonal(cbn::coordinate_container& legal_mo
 
     while (diagonal.is_valid())
     {
-        if (cbn::is_empty(board[diagonal]))
+        // can go to empty coordinates and eat enemies
+        if (cbn::is_empty(board[diagonal]) || is_enemy(location, diagonal))
             legal_moves.push_back(diagonal);
-        else
-        {
-            if (is_enemy(location, diagonal))
-                legal_moves.push_back(diagonal);
+
+        // but if its an enemy -> break the loop
+        if (is_enemy(location, diagonal))
             break;
-        }
 
         diagonal += cbn::ChessCoordinate{offset_x, offset_y};
     }
@@ -358,15 +351,9 @@ void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_mo
     if (!current.is_valid())
         return;
 
-    if (cbn::is_empty(board[current]))
-    {
+    // append if the square is empty or is an enemy
+    if (cbn::is_empty(board[current]) || is_enemy(location, current))
         legal_moves.push_back(current);
-    }
-    else
-    {
-        if (is_enemy(location, current))
-            legal_moves.push_back(current);
-    }
 
     return;
 }
@@ -374,16 +361,11 @@ void lmn::Legalmoves::append_legalmoves_king(cbn::coordinate_container& legal_mo
 void lmn::Legalmoves::append_castling(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& rook_location)
 // location is the king coordinate
 {
+    // Both pieces were not moved yet
     if (board.piece_was_moved(location) || board.piece_was_moved(rook_location))
         return;
 
-    cbn::ChessCoordinate long_castle = {location.character - cbn::CASTLE_OFFSET, location.integer};
-    cbn::ChessCoordinate short_castle = {location.character + cbn::CASTLE_OFFSET, location.integer};
-    cbn::coordinate_container castle_coordinates = cbn::coordinates_between_xy(rook_location, location);
-
-    for (auto& x : castle_coordinates)
-        std::cout << x << "\t";
-    std::cout << "\n";
+    cbn::coordinate_container coordinates_between_pieces = cbn::coordinates_between_xy(rook_location, location);
 
     cbn::ChessCoordinate castle_location;
 
@@ -392,9 +374,8 @@ void lmn::Legalmoves::append_castling(cbn::coordinate_container& legal_moves, co
     else
         castle_location = location + cbn::ChessCoordinate{cbn::CASTLE_OFFSET, 0};
 
-    std::cout << "CASTLE " << castle_location << "\n";
-
-    if (coordinates_are_empty(board, castle_coordinates))
+    // no pieces between king and rook
+    if (coordinates_are_empty(board, coordinates_between_pieces))
         legal_moves.push_back(castle_location);
 
     return;
@@ -544,19 +525,20 @@ cbn::coordinate_container cbn::coordinates_between_xy(cbn::ChessCoordinate x, co
 void cbn::ChessBoard::move(const cbn::ChessNotation& move)
 // move a piece on the chess board from move.x to move.y
 {
+    // get all legal moves for move.from    
     lmn::Legalmoves legal{*this};
-    
     auto legal_moves = legal(move.from);
 
     if (move_is_legal(legal_moves, move))
     {
         if (!move_history.empty())
         {
-            auto last = last_move();
+            auto last = last_move();    // need last move to check if en passant is legal
             if (legal.is_en_passant(move.from, last.to))
             {
+                // if pawn moves diagonally
                 if (last.to.character == move.to.character)
-                    operator[](last.to) = EMPTY_SQUARE; 
+                    operator[](last.to) = EMPTY_SQUARE; // remove the last moved piece
             }
         }
         move_piece(move);
