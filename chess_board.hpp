@@ -102,9 +102,9 @@ bool cbn::ChessBoard::piece_was_moved(const cbn::ChessCoordinate& x) const
     for (const auto& move : move_history)
     {
         if (move.from == x)
-            return false;
+            return true;
     }
-    return true;
+    return false;
 }
 
 /****************************************************************************************************************************************/
@@ -150,7 +150,7 @@ namespace lmn
 
 /*******************************************************************Function definition*********************************************************************/
 
-bool coordinates_are_empty(const cbn::ChessBoard& board, const cbn::coordinate_container& c)
+bool lmn::coordinates_are_empty(const cbn::ChessBoard& board, const cbn::coordinate_container& c)
 {
     for (const auto& x : c)
     {
@@ -381,12 +381,18 @@ void lmn::Legalmoves::append_castling(cbn::coordinate_container& legal_moves, co
     cbn::ChessCoordinate short_castle = {location.character + cbn::CASTLE_OFFSET, location.integer};
     cbn::coordinate_container castle_coordinates = cbn::coordinates_between_xy(rook_location, location);
 
+    for (auto& x : castle_coordinates)
+        std::cout << x << "\t";
+    std::cout << "\n";
+
     cbn::ChessCoordinate castle_location;
 
     if (rook_location.character == cbn::LEFT_ROOK_CHARACTER)
-        castle_location = location - cbn::ChessCoordinate{cbn::CASTLE_OFFSET, location.integer};
+        castle_location = location - cbn::ChessCoordinate{cbn::CASTLE_OFFSET, 0};
     else
-        castle_location = location + cbn::ChessCoordinate{cbn::CASTLE_OFFSET, location.integer};
+        castle_location = location + cbn::ChessCoordinate{cbn::CASTLE_OFFSET, 0};
+
+    std::cout << "CASTLE " << castle_location << "\n";
 
     if (coordinates_are_empty(board, castle_coordinates))
         legal_moves.push_back(castle_location);
@@ -507,28 +513,28 @@ bool lmn::Legalmoves::is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessC
 }
 
 cbn::coordinate_container cbn::coordinates_between_xy(cbn::ChessCoordinate x, const cbn::ChessCoordinate& y)
+// return container all coordinates between x and y (without including them)
 {
-    cbn::coordinate_container coordinates;
+    cbn::coordinate_container coordinates{};
 
-    if (x == y)
-        return coordinates;
+    while (x != y)
+    {
+        // move 1 closer on character axis
+        if (x.character > y.character)
+            x -= cbn::ChessCoordinate{1,0};
+        else if (x.character < y.character)
+            x += cbn::ChessCoordinate{1,0};
+        
+        // move 1 closer on 
+        if (x.integer > y.integer)
+            x -= cbn::ChessCoordinate{0,1};
+        else if (x.integer < y.integer)
+            x += cbn::ChessCoordinate{0,1};
 
-    // move 1 closer on character axis
-    if (x.character > y.character)
-        x -= cbn::ChessCoordinate{1,0};
-    else if (x.character < y.character)
-        x += cbn::ChessCoordinate{1,0};
-    
-    // move 1 closer on 
-    if (x.integer > y.integer)
-        x -= cbn::ChessCoordinate{0,1};
-    else if (x.integer < y.integer)
-        x += cbn::ChessCoordinate{0,1};
-
-    coordinates.push_back(x);
-
-    cbn::coordinate_container next_coordinates = coordinates_between_xy(x,y);
-    coordinates.insert(coordinates.begin(), next_coordinates.begin(), next_coordinates.end());
+        // otherwise equivalent of y will be added to the container
+        if (x != y)
+            coordinates.push_back(x);  
+    }
 
     return coordinates;
 }
