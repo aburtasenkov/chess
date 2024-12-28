@@ -49,6 +49,8 @@ namespace cbn
 
     // return true if movement.from is in legal_moves --> the move is legal
     bool move_is_legal(const coordinate_container& legal_moves, const ChessNotation& movement);
+
+    cbn::coordinate_container coordinates_between_xy(cbn::ChessCoordinate x, const cbn::ChessCoordinate& y);
 }
 
 /**************************************************************************************Function definition*******************************************************************/
@@ -126,7 +128,7 @@ namespace lmn
             void append_bishop_diagonal(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             
             void append_legalmoves_king(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
-
+            void append_castling(cbn::coordinate_container& legal_moves, const cbn::Piece_data& piece_info, const cbn::ChessCoordinate& location);
     };
 
     cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>> generate_mixes(int i1, int i2);
@@ -440,6 +442,33 @@ bool lmn::Legalmoves::is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessC
     const cbn::Piece_data d2 = get_piece_info(l2);
 
     return d1.color != d2.color;
+}
+
+cbn::coordinate_container cbn::coordinates_between_xy(cbn::ChessCoordinate x, const cbn::ChessCoordinate& y)
+{
+    cbn::coordinate_container coordinates;
+
+    if (x == y)
+        return coordinates;
+
+    // move 1 closer on character axis
+    if (x.character > y.character)
+        x -= cbn::ChessCoordinate{1,0};
+    else if (x.character < y.character)
+        x += cbn::ChessCoordinate{1,0};
+    
+    // move 1 closer on 
+    if (x.integer > y.integer)
+        x -= cbn::ChessCoordinate{0,1};
+    else if (x.integer < y.integer)
+        x += cbn::ChessCoordinate{0,1};
+
+    coordinates.push_back(x);
+
+    cbn::coordinate_container next_coordinates = coordinates_between_xy(x,y);
+    coordinates.insert(coordinates.begin(), next_coordinates.begin(), next_coordinates.end());
+
+    return coordinates;
 }
 
 /*************************Functions requiring Legalmoves and Chessboard****************************/
