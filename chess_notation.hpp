@@ -22,6 +22,9 @@ namespace chess_notation
     const int RANK_7_INDEX = 6;
     const int RANK_8_INDEX = 7;
 
+    const int WHITE_BACK_RANK = RANK_1_INDEX;
+    const int BLACK_BACK_RANK = RANK_8_INDEX;
+
     const Exception BadInputError{"BadInputError: Piece Location"};
     const Exception EmptySquareError{"EmptySquareError: Location Does Not Contain Any Pieces"};
 

@@ -100,4 +100,9 @@ namespace chess_board_constants
 
     const int PAWN_OFFSET_X = 0;
     const int PAWN_OFFSET_Y = 1;
+
+    const int LEFT_ROOK_CHARACTER = 1;
+    const int RIGHT_ROOK_CHARACTER = 8;
+
+    const int CASTLE_OFFSET = 2;
 }
