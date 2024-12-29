@@ -120,12 +120,14 @@ namespace lmn
             // calculate all legal moves for piece at location
             const cbn::coordinate_container operator()(const cbn::ChessCoordinate& location);
 
-            const cbn::Piece_data get_piece_info(const cbn::ChessCoordinate& location) const;
+            const cbn::Piece_data get_piece_data(const cbn::ChessCoordinate& location) const;
 
             bool is_en_passant(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const;
 
             bool is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2) const;
 
+            bool is_castle(const cbn::ChessNotation& move);
+        
         private:
             const cbn::ChessBoard& board;
 
@@ -150,6 +152,18 @@ namespace lmn
 
 /*******************************************************************Function definition*********************************************************************/
 
+bool lmn::Legalmoves::is_castle(const cbn::ChessNotation& move)
+// return if the move is a castle or not
+{
+    const cbn::Piece_data piece_info = get_piece_data(move.from);
+
+    // moving piece is king and moves 2 squares
+    if (piece_info.type == cbn::Piece_type::King && abs(move.from.character - move.to.character) == cbn::CASTLE_OFFSET)
+        return true;
+    return false;
+}
+
+
 bool lmn::coordinates_are_empty(const cbn::ChessBoard& board, const cbn::coordinate_container& c)
 {
     for (const auto& x : c)
@@ -168,8 +182,8 @@ bool lmn::Legalmoves::is_en_passant(const cbn::ChessCoordinate& location, const 
     if (!is_enemy(location, square))
         return false;
 
-    const cbn::Piece_data piece_info = get_piece_info(location);
-    const cbn::Piece_data square_info = get_piece_info(square);
+    const cbn::Piece_data piece_info = get_piece_data(location);
+    const cbn::Piece_data square_info = get_piece_data(square);
 
     if (piece_info.type != square_info.type) // need to be of same type
         return false;
@@ -183,7 +197,7 @@ bool lmn::Legalmoves::is_en_passant(const cbn::ChessCoordinate& location, const 
     return true;
 }
 
-const cbn::Piece_data lmn::Legalmoves::get_piece_info(const cbn::ChessCoordinate& location) const
+const cbn::Piece_data lmn::Legalmoves::get_piece_data(const cbn::ChessCoordinate& location) const
 {
     cbn::Piece_data piece_info;
 
@@ -298,13 +312,17 @@ void lmn::Legalmoves::append_legalmoves_rook(cbn::coordinate_container& legal_mo
 
     while (current.is_valid())
     {
-        // can go to empty coordinates and eat enemies
-        if (cbn::is_empty(board[current]) || is_enemy(location, current))
+        // can go to empty coordinates
+        if (cbn::is_empty(board[current]))
             legal_moves.push_back(current);
 
         // but if its an enemy -> break the loop
-        if (is_enemy(location, current))
+        else
+        {
+            if (is_enemy(location, current))
+                legal_moves.push_back(current);
             break;
+        }
 
         current += cbn::ChessCoordinate{offset_x, offset_y};
     }
@@ -331,13 +349,17 @@ void lmn::Legalmoves::append_bishop_diagonal(cbn::coordinate_container& legal_mo
 
     while (diagonal.is_valid())
     {
-        // can go to empty coordinates and eat enemies
-        if (cbn::is_empty(board[diagonal]) || is_enemy(location, diagonal))
+        // can go to empty coordinates
+        if (cbn::is_empty(board[diagonal]))
             legal_moves.push_back(diagonal);
 
         // but if its an enemy -> break the loop
-        if (is_enemy(location, diagonal))
+        else
+        {
+            if (is_enemy(location, diagonal))
+                legal_moves.push_back(diagonal);
             break;
+        }
 
         diagonal += cbn::ChessCoordinate{offset_x, offset_y};
     }
@@ -384,7 +406,7 @@ void lmn::Legalmoves::append_castling(cbn::coordinate_container& legal_moves, co
 const cbn::coordinate_container lmn::Legalmoves::operator()(const cbn::ChessCoordinate& location)
 // return a container containing all legal moves for kind located at location
 {
-    const cbn::Piece_data piece_info = get_piece_info(location);
+    const cbn::Piece_data piece_info = get_piece_data(location);
 
     cbn::coordinate_container legal_moves{};
 
@@ -487,8 +509,8 @@ cbn::container_type<std::pair<int,int>, cbn::allocator_type<std::pair<int,int>>>
 
 bool lmn::Legalmoves::is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2) const
 {
-    const cbn::Piece_data d1 = get_piece_info(l1);
-    const cbn::Piece_data d2 = get_piece_info(l2);
+    const cbn::Piece_data d1 = get_piece_data(l1);
+    const cbn::Piece_data d2 = get_piece_data(l2);
 
     return d1.color != d2.color;
 }
@@ -531,6 +553,7 @@ void cbn::ChessBoard::move(const cbn::ChessNotation& move)
 
     if (move_is_legal(legal_moves, move))
     {
+        // if en pessant
         if (!move_history.empty())
         {
             auto last = last_move();    // need last move to check if en passant is legal
@@ -541,6 +564,33 @@ void cbn::ChessBoard::move(const cbn::ChessNotation& move)
                     operator[](last.to) = EMPTY_SQUARE; // remove the last moved piece
             }
         }
+
+        if (legal.is_castle(move))
+        {
+            // move.to.ingeter and move.from.integer are same as the rank doesnt change for the piece
+
+            cbn::ChessNotation rook_move;
+            
+            // if left castle
+            if (move.to.character == cbn::LEFT_CASTLE_CHARACTER)
+            {
+                rook_move =
+                {
+                    {cbn::LEFT_ROOK_CHARACTER, move.to.integer},
+                    {cbn::LEFT_CASTLE_CHARACTER + cbn::CASTLE_OFFSET / 2, move.to.integer}
+                };
+            }
+            else    // right castle
+            {
+                rook_move =
+                {
+                    {cbn::RIGHT_ROOK_CHARACTER, move.to.integer},
+                    {cbn::RIGHT_CASTLE_CHARACTER - cbn::CASTLE_OFFSET / 2, move.to.integer}
+                };
+            }
+            move_piece(rook_move);
+        }
+
         move_piece(move);
     }
     else 
