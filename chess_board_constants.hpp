@@ -22,7 +22,13 @@ namespace chess_board_constants
         White, Black
     };
 
+    const std::map<Piece_color, Piece_color> enemy_color
+    {
+        {Piece_color::White, Piece_color::Black}, {Piece_color::Black, Piece_color::White}
+    };
+
     const Exception IllegalMove{"IllegalMoveError: The Inputted Move is Illegal to do"};
+    const Exception BadSequenceError{"BadSequenceError: This Color is Not At Move"};
 
     const int CHESS_BOARD_SIZE = 8;
     const value_type EMPTY_SQUARE = "□";

@@ -30,6 +30,9 @@ int main()
 
         std::cin >> from;
 
+        if (!(board.get_piece_data(from).color == board.colors_turn()))
+            throw BadSequenceError;
+
         const auto& move_list = legal(from);
 
         std::cout << "List of all legal moves: " << move_list << "\n";

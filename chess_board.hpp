@@ -43,11 +43,14 @@ namespace cbn
 
             bool is_en_passant(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const;
 
+            const Piece_color& colors_turn() const;
+
         private:
             void move_piece(const ChessNotation& move);
 
             bn::Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
             notation_container move_history;
+            Piece_color moving_turn{Piece_color::White};
     };
 
     /****************************************************Function declaration************************************************************************************/
@@ -138,6 +141,11 @@ const cbn::Piece_data cbn::ChessBoard::get_piece_data(const cbn::ChessCoordinate
     }
 
     return piece_info;
+}
+
+const cbn::Piece_color& cbn::ChessBoard::colors_turn() const
+{
+    return moving_turn;
 }
 
 /****************************************************************************************************************************************/
@@ -595,6 +603,9 @@ void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn
         }
 
         move_piece(move);
+
+        // enemy is at move now
+        moving_turn = enemy_color.at(moving_turn);
     }
     else 
         throw cbn::IllegalMove;
