@@ -41,7 +41,7 @@ namespace cbn
 
             bool is_enemy(const cbn::ChessCoordinate& l1, const cbn::ChessCoordinate& l2) const;
 
-            bool is_en_passant(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const;
+            bool passant_is_legal(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const;
 
             const Piece_color& colors_turn() const;
 
@@ -214,7 +214,7 @@ bool cbn::coordinates_are_empty(const cbn::ChessBoard& board, const cbn::coordin
     return true;
 }
 
-bool cbn::ChessBoard::is_en_passant(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const
+bool cbn::ChessBoard::passant_is_legal(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const
 {
     if (operator[](square) == cbn::EMPTY_SQUARE)
         return false;
@@ -303,7 +303,7 @@ void lmn::Legalmoves::append_en_passant(const cbn::Piece_data& piece_info, const
         if (!square.is_valid())
             continue;
 
-        if (!board.is_en_passant(location, square))
+        if (!board.passant_is_legal(location, square))
             continue;
 
         cbn::ChessCoordinate en_passant_coordinate;
@@ -568,10 +568,10 @@ void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn
         if (!move_history.empty())
         {
             auto last = last_move();    // need last move to check if en passant is legal
-            if (is_en_passant(move.from, last.to))
+            if (passant_is_legal(move.from, last.to))
             {
                 // if pawn moves diagonally
-                if (last.to.character == move.to.character)
+                if (last.to.character != move.to.character)
                     operator[](last.to) = EMPTY_SQUARE; // remove the last moved piece
             }
         }
