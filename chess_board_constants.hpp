@@ -105,4 +105,7 @@ namespace chess_board_constants
     const int RIGHT_ROOK_CHARACTER = 8;
 
     const int CASTLE_OFFSET = 2;
+
+    const int LEFT_CASTLE_CHARACTER = 3;
+    const int RIGHT_CASTLE_CHARACTER = 7;
 }
