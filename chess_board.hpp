@@ -45,6 +45,8 @@ namespace cbn
 
             const Piece_color& colors_turn() const;
 
+            bool is_check(const cbn::ChessNotation& move);
+
         private:
             void move_piece(const ChessNotation& move);
 
@@ -229,7 +231,13 @@ bool cbn::ChessBoard::passant_is_legal(const cbn::ChessCoordinate& location, con
         return false;
 
     // same character rank and move difference is 2
-    if (!(last_move().from.character == last_move().to.character && abs(last_move().from.integer - last_move().to.integer) == 2))
+    if (!(last_move().from.character == last_move().to.character))
+        return false;
+
+    if (abs(last_move().from.integer - last_move().to.integer) == 2)
+        return false;
+    
+    if (abs(last_move().from.character - location.character) != 1)
         return false;
 
     return true;
@@ -421,9 +429,9 @@ void lmn::Legalmoves::append_castling(const cbn::Piece_data& piece_info, const c
 const cbn::coordinate_container& lmn::Legalmoves::operator()(const cbn::ChessCoordinate& location)
 // return a container containing all legal moves for kind located at location
 {
-    const cbn::Piece_data piece_info = board.get_piece_data(location);
-
     move_list = cbn::coordinate_container{};
+
+    const cbn::Piece_data piece_info = board.get_piece_data(location);
 
     if (piece_info.type == cbn::Piece_type::Rook || piece_info.type == cbn::Piece_type::Queen)
     {
@@ -557,6 +565,35 @@ cbn::coordinate_container cbn::coordinates_between_xy(cbn::ChessCoordinate x, co
     return coordinates;
 }
 
+bool cbn::ChessBoard::is_check(const cbn::ChessNotation& move)
+// return if the new move is a check
+{
+    // act as if the piece is already moved there
+    const auto temp = operator[](move.to);
+    operator[](move.to) = operator[](move.from);
+
+    lmn::Legalmoves legal{*this};
+    const auto& potential_moves = legal(move.to);
+
+    for (const auto& coordinate : potential_moves)
+    {
+        if (!coordinate.is_valid() || is_empty(operator[](coordinate)))
+            continue;
+        
+        std::cout << coordinate << "\t";
+
+        cbn::Piece_data piece_info = get_piece_data(coordinate);
+
+        if (piece_info.type == cbn::Piece_type::King)
+            return true;
+    }
+
+    // reverse the state of the board
+    operator[](move.to) = temp;
+
+    return false;
+}
+
 /*************************Functions requiring Legalmoves and Chessboard****************************/
 
 void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn::ChessNotation& move)
@@ -600,6 +637,11 @@ void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn
                 };
             }
             move_piece(rook_move);
+        }
+
+        if (is_check(move))
+        {
+            std::cout << "CHECKMATE\n";
         }
 
         move_piece(move);
