@@ -217,7 +217,10 @@ bool cbn::coordinates_are_empty(const cbn::ChessBoard& board, const cbn::coordin
 }
 
 bool cbn::ChessBoard::passant_is_legal(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const
+// return true if an en passant move is legal
+// location is the current piece, square is the piece left or right of it
 {
+    // check so i can call get_piece_data
     if (operator[](square) == cbn::EMPTY_SQUARE)
         return false;
 
@@ -231,13 +234,13 @@ bool cbn::ChessBoard::passant_is_legal(const cbn::ChessCoordinate& location, con
         return false;
 
     // same character rank and move difference is 2
-    if (!(last_move().from.character == last_move().to.character))
+    if (last_move().from.character != last_move().to.character)
         return false;
-
     if (abs(last_move().from.integer - last_move().to.integer) == 2)
         return false;
     
-    if (abs(last_move().from.character - location.character) != 1)
+    // need to be close to each other
+    if (abs(last_move().to.character - location.character) != 1)
         return false;
 
     return true;
