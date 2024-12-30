@@ -27,8 +27,9 @@ namespace chess_board_constants
         {Piece_color::White, Piece_color::Black}, {Piece_color::Black, Piece_color::White}
     };
 
-    const Exception IllegalMove{"IllegalMoveError: The Inputted Move is Illegal to do"};
+    const Exception IllegalMoveError{"IllegalMoveError: The Inputted Move Is Illegal To Do"};
     const Exception BadSequenceError{"BadSequenceError: This Color is Not At Move"};
+    const Exception KingIsCheckedError{"KingIsCheckedError: The Inputted Move Is Illegal To Do"};
 
     const int CHESS_BOARD_SIZE = 8;
     const value_type EMPTY_SQUARE = "□";
