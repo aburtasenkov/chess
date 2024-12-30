@@ -47,12 +47,15 @@ namespace cbn
 
             bool is_check(const cbn::ChessNotation& move);
 
+            bool checked_status() const;
+
         private:
             void move_piece(const ChessNotation& move);
 
             bn::Board<container_type, value_type, allocator_type> board{DEFAULT_CHESS_BOARD};
             notation_container move_history;
             Piece_color moving_turn{Piece_color::White};
+            bool check_status{false};
     };
 
     /****************************************************Function declaration************************************************************************************/
@@ -148,6 +151,11 @@ const cbn::Piece_data cbn::ChessBoard::get_piece_data(const cbn::ChessCoordinate
 const cbn::Piece_color& cbn::ChessBoard::colors_turn() const
 {
     return moving_turn;
+}
+
+bool cbn::ChessBoard::checked_status() const
+{
+    return check_status;
 }
 
 /****************************************************************************************************************************************/
@@ -436,6 +444,9 @@ const cbn::coordinate_container& lmn::Legalmoves::operator()(const cbn::ChessCoo
 
     const cbn::Piece_data piece_info = board.get_piece_data(location);
 
+    if (board.checked_status() && piece_info.type != cbn::Piece_type::King)
+        throw cbn::KingIsCheckedError;
+
     if (piece_info.type == cbn::Piece_type::Rook || piece_info.type == cbn::Piece_type::Queen)
     {
         // create pairs of all directions for rooks move
@@ -644,7 +655,7 @@ void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn
 
         if (is_check(move))
         {
-            std::cout << "CHECKMATE\n";
+            check_status = true;
         }
 
         move_piece(move);
@@ -653,7 +664,7 @@ void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn
         moving_turn = enemy_color.at(moving_turn);
     }
     else 
-        throw cbn::IllegalMove;
+        throw cbn::IllegalMoveError;
 }
 
 void cbn::ChessBoard::move_piece(const ChessNotation& move)
