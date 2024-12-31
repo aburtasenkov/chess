@@ -641,10 +641,12 @@ bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
     const auto temp = to;
 
     to = from;
+    from = EMPTY_SQUARE;
 
     if (!is_checked(moving_turn))
         output_value = true;
 
+    from = to;
     to = temp;
 
     return output_value;

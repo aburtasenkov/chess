@@ -48,6 +48,9 @@ int main()
         }
 
         board.move(move_list, move);
+
+        if (board.is_checked(board.colors_turn()))
+            std::cout << "check\n";
     }
     catch (Exception& e)
     {
