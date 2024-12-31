@@ -35,13 +35,13 @@ int main()
 
         const auto& move_list = legal(move.from);
 
-        std::cout << "List of all legal moves: " << move_list << "\n";
-
         if (board.is_checked(board.colors_turn()))
         {
             if (!board.move_is_unchecking(move))
                 throw KingIsCheckedError;
         }
+
+        std::cout << "List of all legal moves: " << move_list << "\n";
 
         board.move(move_list, move);
 
