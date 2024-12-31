@@ -36,7 +36,7 @@ namespace cbn
 
             const Piece_color& colors_turn() const;
 
-            bool is_check(const cbn::ChessNotation& move);
+            bool is_checking_move(const cbn::ChessNotation& move);
 
             bool checked_status() const;
 
@@ -553,7 +553,7 @@ cbn::coordinate_container cbn::coordinates_between_xy(cbn::ChessCoordinate x, co
     return coordinates;
 }
 
-bool cbn::ChessBoard::is_check(const cbn::ChessNotation& move)
+bool cbn::ChessBoard::is_checking_move(const cbn::ChessNotation& move)
 // return if the new move is a check
 {
     // act as if the piece is already moved there
@@ -625,7 +625,7 @@ void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn
             move_piece(rook_move);
         }
 
-        if (is_check(move))
+        if (is_checking_move(move))
         {
             check_status = true;
         }
