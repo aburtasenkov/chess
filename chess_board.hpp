@@ -36,9 +36,9 @@ namespace cbn
 
             const Piece_color& colors_turn() const;
 
-            bool is_checking_move(const cbn::ChessNotation& move);
+            bool is_checked(const Piece_color& color);
 
-            bool checked_status() const;
+            bool move_is_unchecking(const ChessNotation& move);
 
         private:
             void move_piece(const ChessNotation& move);
@@ -46,7 +46,6 @@ namespace cbn
             bn::Board<container_type, Piece, allocator_type> board{DEFAULT_CHESS_BOARD};
             notation_container move_history;
             Piece_color moving_turn{Piece_color::White};
-            bool check_status{false};
     };
 
     /****************************************************Function declaration************************************************************************************/
@@ -133,11 +132,6 @@ bool cbn::ChessBoard::piece_was_moved(const cbn::ChessCoordinate& x) const
 const cbn::Piece_color& cbn::ChessBoard::colors_turn() const
 {
     return moving_turn;
-}
-
-bool cbn::ChessBoard::checked_status() const
-{
-    return check_status;
 }
 
 /****************************************************************************************************************************************/
@@ -421,9 +415,6 @@ const cbn::coordinate_container& lmn::Legalmoves::operator()(const cbn::ChessCoo
 {
     move_list = cbn::coordinate_container{};
 
-    if (board.checked_status() && board[location].type != cbn::Piece_type::King)
-        throw cbn::KingIsCheckedError;
-
     if (board[location].type == cbn::Piece_type::Rook || board[location].type == cbn::Piece_type::Queen)
     {
         // create pairs of all directions for rooks move
@@ -553,33 +544,6 @@ cbn::coordinate_container cbn::coordinates_between_xy(cbn::ChessCoordinate x, co
     return coordinates;
 }
 
-bool cbn::ChessBoard::is_checking_move(const cbn::ChessNotation& move)
-// return if the new move is a check
-{
-    // act as if the piece is already moved there
-    const auto temp = operator[](move.to);
-    operator[](move.to) = operator[](move.from);
-
-    lmn::Legalmoves legal{*this};
-    const auto& potential_moves = legal(move.to);
-
-    for (const auto& coordinate : potential_moves)
-    {
-        if (!coordinate.is_valid() || is_empty(operator[](coordinate)))
-            continue;
-        
-        std::cout << coordinate << "\t";
-
-        if (operator[](coordinate).type == cbn::Piece_type::King)
-            return true;
-    }
-
-    // reverse the state of the board
-    operator[](move.to) = temp;
-
-    return false;
-}
-
 /*************************Functions requiring Legalmoves and Chessboard****************************/
 
 void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn::ChessNotation& move)
@@ -625,11 +589,6 @@ void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn
             move_piece(rook_move);
         }
 
-        if (is_checking_move(move))
-        {
-            check_status = true;
-        }
-
         move_piece(move);
 
         // enemy is at move now
@@ -645,4 +604,48 @@ void cbn::ChessBoard::move_piece(const ChessNotation& move)
     operator[](move.from)= EMPTY_SQUARE;
 
     move_history.push_back(move);
+}
+
+bool cbn::ChessBoard::is_checked(const Piece_color& color)
+{
+    lmn::Legalmoves legal(*this);
+
+    // iterate all pieces
+    for (int row_i = 0; row_i < board.size(); ++row_i)
+    {
+        const auto& row = board[row_i];
+        for (int piece_i = 0; piece_i < row.size(); ++piece_i)
+        {
+            ChessCoordinate current{piece_i, row_i};
+            if (operator[](current).color != enemy_color.at(color))   // if enemy to current moving color
+                continue;
+
+            const auto coords = legal(ChessCoordinate{piece_i, row_i});
+            
+            // iterate over legal moves of current square
+            for (const auto& coord : coords)
+            {
+                if (operator[](coord).type == Piece_type::King)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
+{
+    bool output_value = false;
+    auto& to = operator[](move.to);
+    auto& from = operator[](move.from);
+    const auto temp = to;
+
+    to = from;
+
+    if (!is_checked(moving_turn))
+        output_value = true;
+
+    to = temp;
+
+    return output_value;
 }

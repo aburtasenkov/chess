@@ -39,7 +39,15 @@ int main()
 
         std::cin >> to;
 
-        board.move(move_list, ChessNotation{from, to});
+        ChessNotation move{from, to};
+
+        if (board.is_checked(board.colors_turn()))
+        {
+            if (!board.move_is_unchecking(move))
+                throw KingIsCheckedError;
+        }
+
+        board.move(move_list, move);
     }
     catch (Exception& e)
     {
