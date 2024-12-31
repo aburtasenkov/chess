@@ -6,12 +6,10 @@ namespace chess_notation
 {
     const int CHESSCOORDINATE_INVALID_VALUE = -1;
 
-    const int MAX_INDEX_HORIZONTAL = 8;
-    const int MAX_INDEX_VERTICAL = 7;
-    const int MIN_INDEX_HORIZONTAL = 1;
-    const int MIN_INDEX_VERTICAL = 0;
+    const int MAX_INDEX = 7;
+    const int MIN_INDEX = 0;
 
-    const char ALPHABET_TO_INT = '`'; // character 1 int smaller than 'a' --> 'a' has index 1
+    const char ALPHABET_TO_INT = 'a'; // character 1 int smaller than 'a' --> 'a' has index 1
     const int INDEX_TO_NUM = 1;
     const int RANK_1_INDEX = 0;
     const int RANK_2_INDEX = 1;
@@ -46,18 +44,18 @@ namespace chess_notation
 
         bool is_valid() const
         {
-            if (!(MIN_INDEX_HORIZONTAL <= character && character <= MAX_INDEX_HORIZONTAL))
+            if (!(MIN_INDEX <= character && character <= MAX_INDEX))
                 return false;
-            if (!(MIN_INDEX_VERTICAL <= integer && integer <= MAX_INDEX_VERTICAL))
+            if (!(MIN_INDEX <= integer && integer <= MAX_INDEX))
                 return false;
             return true;
         }
 
         void assert_data() const
         {
-            if (!(MIN_INDEX_HORIZONTAL <= character && character <= MAX_INDEX_HORIZONTAL))
+            if (!(MIN_INDEX <= character && character <= MAX_INDEX))
                 throw BadInputError;
-            if (!(MIN_INDEX_VERTICAL <= integer && integer <= MAX_INDEX_VERTICAL))
+            if (!(MIN_INDEX <= integer && integer <= MAX_INDEX))
                 throw BadInputError;
         }
 
