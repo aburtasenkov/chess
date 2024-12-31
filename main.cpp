@@ -22,24 +22,20 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 
 int main()
 {
-    ChessCoordinate from, to;
+    ChessNotation move;
 
     while (true)
     try {
         std::cout << board;
 
-        std::cin >> from;
+        std::cin >> move;
 
-        if (!(board[from].color == board.colors_turn()))
+        if (!(board[move.from].color == board.colors_turn()))
             throw BadSequenceError;
 
-        const auto& move_list = legal(from);
+        const auto& move_list = legal(move.from);
 
         std::cout << "List of all legal moves: " << move_list << "\n";
-
-        std::cin >> to;
-
-        ChessNotation move{from, to};
 
         if (board.is_checked(board.colors_turn()))
         {
@@ -50,7 +46,7 @@ int main()
         board.move(move_list, move);
 
         if (board.is_checked(board.colors_turn()))
-            std::cout << "check\n";
+            std::cout << "Check\n";
     }
     catch (Exception& e)
     {
