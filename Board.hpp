@@ -48,6 +48,11 @@ namespace bn
             return container[index];
         }
 
+        int size() 
+        {
+            return container.size();
+        }
+
         template <template <typename, typename> class C, typename V, template <typename> class A>
         friend std::ostream& operator<<(std::ostream& os, const Board<C, V, A>& b);
     private:
