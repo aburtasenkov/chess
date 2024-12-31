@@ -48,7 +48,7 @@ namespace bn
             return container[index];
         }
 
-        int size() 
+        int size() const
         {
             return container.size();
         }
