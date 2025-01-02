@@ -74,8 +74,8 @@ namespace chess_constants
     const helper_classes::Piece BLACK_KNIGHT{"♞", helper_classes::Piece_type::Knight, helper_classes::Piece_color::Black};
     const helper_classes::Piece BLACK_PAWN{"♟", helper_classes::Piece_type::Pawn, helper_classes::Piece_color::Black};
 
-    const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type BLACK_PIECES_RANK{ EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
-                                                                                    BLACK_KING, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
+    const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type BLACK_PIECES_RANK{ BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, 
+                                                                                    BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK };
 
     const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type BLACK_PAWN_RANK{ BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, 
                                                                                     BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, };
@@ -86,15 +86,15 @@ namespace chess_constants
     const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type WHITE_PAWN_RANK{ WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, 
                                                                                     WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN };
                                                                                 
-    const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type WHITE_PIECES_RANK{ WHITE_ROOK, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
-                                                                                    WHITE_KING, EMPTY_SQUARE, EMPTY_SQUARE, WHITE_ROOK };
+    const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type WHITE_PIECES_RANK{ WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, 
+                                                                                    WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK };
 
     const bn::Board<chess_types::container_type, chess_types::value_type, chess_types::allocator_type>::row_type CHAR_COORDINATE_RANK{ "O", "A", "B", "C", "D", 
                                                                                     "E", "F", "G", "H" };
 
     const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::board_type DEFAULT_CHESS_BOARD
     {
-        BLACK_PIECES_RANK, EMPTY_RANK, WHITE_PIECES_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK
+        BLACK_PIECES_RANK, BLACK_PAWN_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK, WHITE_PAWN_RANK, WHITE_PIECES_RANK
     };
 
     const int KNIGHT_OFFSET_LONG_SIDE = 2;
