@@ -622,7 +622,7 @@ bool cbn::ChessBoard::is_checked(const Piece_color& color)
             if (operator[](current).color != enemy_color.at(color))   // if enemy to current moving color
                 continue;
 
-            const auto coords = legal(ChessCoordinate{piece_i, row_i});
+            const auto coords = legal(current);
             
             // iterate over legal moves of current square
             for (const auto& coord : coords)
@@ -657,28 +657,29 @@ bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
 bool cbn::ChessBoard::is_checkmated(const cbn::Piece_color& color)
 // return if color is checkmated and the game is over
 {
-    // lmn::Legalmoves legal(*this);
+    lmn::Legalmoves legal(*this);
 
-    // // iterate all pieces
-    // for (int row_i = 0; row_i < board.size(); ++row_i)
-    // {
-    //     const auto& row = board[row_i];
-    //     for (int piece_i = 0; piece_i < row.size(); ++piece_i)
-    //     {
-    //         ChessCoordinate current{piece_i, row_i};
-    //         const auto& piece = operator[](current);
-    //         if (piece.color != color && piece.type != cbn::Piece_type::King)   // if not same color and not king piece
-    //             continue;
+    // iterate all pieces
+    for (int row_i = 0; row_i < board.size(); ++row_i)
+    {
+        const auto& row = board[row_i];
+        for (int piece_i = 0; piece_i < row.size(); ++piece_i)
+        {
+            ChessCoordinate current{piece_i, row_i};
+            const auto& piece = operator[](current);
+            if (piece.color != color && piece.type != cbn::Piece_type::King)   // if not same color and not king piece
+                continue;
 
-    //         const auto coords = legal(current);
+            const auto coords = legal(current);
             
-    //         // iterate over legal moves of current square
-    //         for (const auto& coord : coords)
-    //         {
-    //             if (move_is_unchecking({current, coord}))
-    //                 return false;
-    //         }
-    //     }
-    // }
+            // iterate over legal moves of current square
+            for (const auto& coord : coords)
+            {
+                // if no legal moves that are saving the king
+                if (move_is_unchecking({current, coord}))
+                    return false;
+            }
+        }
+    }
     return true;
 }
