@@ -44,6 +44,8 @@ namespace cbn
 
             bool is_draw(const Piece_color& color);
 
+            notation_container& get_history();
+
         private:
             void move_piece(const ChessNotation& move);
 
@@ -54,8 +56,8 @@ namespace cbn
 
     class TemporalMove{
         public:
-            TemporalMove(ChessBoard& b, notation_container& mh, const ChessNotation& m)
-                :board(b), move_history(mh), move(m)
+            TemporalMove(ChessBoard& b, const ChessNotation& m)
+                :board(b), move_history(b.get_history()), move(m)
             {
                 board[move.to] = board[move.from];
                 board[move.from] = EMPTY_SQUARE;
@@ -88,6 +90,11 @@ namespace cbn
 }
 
 /**************************************************************************************Function definition*******************************************************************/
+
+cbn::notation_container& cbn::ChessBoard::get_history()
+{
+    return move_history;
+}
 
 std::ostream& cbn::operator<<(std::ostream& os, const cbn::ChessBoard& cb)
 {
@@ -661,7 +668,7 @@ bool cbn::ChessBoard::is_checked(const Piece_color& color)
 bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
 {
     bool output_value = false;
-    TemporalMove temporal(*this, move_history, move);
+    TemporalMove temporal(*this, move);
 
     if (!is_checked(moving_turn))
         output_value = true;
