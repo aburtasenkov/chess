@@ -82,8 +82,8 @@ namespace chess_constants
     const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type WHITE_PAWN_RANK{ WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, 
                                                                                     WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN };
                                                                                 
-    const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type WHITE_PIECES_RANK{ WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, 
-                                                                                    WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK };
+    const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type WHITE_PIECES_RANK{ WHITE_ROOK, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+                                                                                    WHITE_KING, EMPTY_SQUARE, EMPTY_SQUARE, WHITE_ROOK };
 
     const bn::Board<chess_types::container_type, chess_types::value_type, chess_types::allocator_type>::row_type CHAR_COORDINATE_RANK{ "O", "A", "B", "C", "D", 
                                                                                     "E", "F", "G", "H" };
@@ -95,25 +95,20 @@ namespace chess_constants
 
     const int KNIGHT_OFFSET_LONG_SIDE = 2;
     const int KNIGHT_OFFSET_SHORT_SIDE = 1;
-
     const int BISHOP_OFFSET = 1;
-
     const int KING_OFFSET_DIAGONAL = 1;
     const int KING_OFFSET_CROSSWAYS = 0;
-
     const int ROOK_OFFSET_X = 1;
     const int ROOK_OFFSET_Y = 0;
-
     const int PAWN_OFFSET_X = 0;
     const int PAWN_OFFSET_Y = 1;
-
-    const int LEFT_ROOK_CHARACTER = 1;
-    const int RIGHT_ROOK_CHARACTER = 8;
-
     const int CASTLE_OFFSET = 2;
 
-    const int LEFT_CASTLE_CHARACTER = 3;
-    const int RIGHT_CASTLE_CHARACTER = 7;
+    const int LEFT_ROOK_CHARACTER = 0;
+    const int RIGHT_ROOK_CHARACTER = 7;
+
+    const int LEFT_CASTLE_CHARACTER = 2;
+    const int RIGHT_CASTLE_CHARACTER = 6;
 }
 
 namespace chess_pieces
