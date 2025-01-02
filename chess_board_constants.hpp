@@ -30,6 +30,10 @@ namespace helper_classes
         Piece_type type;
         Piece_color color;
 
+        Piece()
+        :character("□"), type(Piece_type::Empty), color(Piece_color::Neutral)
+        {   }
+
         Piece(const chess_types::value_type& val, const Piece_type& t, const Piece_color& c)
         :character(val), type(t), color(c)
         {   }
@@ -70,8 +74,8 @@ namespace chess_constants
     const helper_classes::Piece BLACK_KNIGHT{"♞", helper_classes::Piece_type::Knight, helper_classes::Piece_color::Black};
     const helper_classes::Piece BLACK_PAWN{"♟", helper_classes::Piece_type::Pawn, helper_classes::Piece_color::Black};
 
-    const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type BLACK_PIECES_RANK{ BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, 
-                                                                                    BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK };
+    const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type BLACK_PIECES_RANK{ EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE, 
+                                                                                    BLACK_KING, EMPTY_SQUARE, EMPTY_SQUARE, EMPTY_SQUARE };
 
     const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::row_type BLACK_PAWN_RANK{ BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, 
                                                                                     BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, };
@@ -90,7 +94,7 @@ namespace chess_constants
 
     const bn::Board<chess_types::container_type, helper_classes::Piece, chess_types::allocator_type>::board_type DEFAULT_CHESS_BOARD
     {
-        BLACK_PIECES_RANK, BLACK_PAWN_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK, WHITE_PAWN_RANK, WHITE_PIECES_RANK
+        BLACK_PIECES_RANK, EMPTY_RANK, WHITE_PIECES_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK, EMPTY_RANK
     };
 
     const int KNIGHT_OFFSET_LONG_SIDE = 2;
