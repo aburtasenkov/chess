@@ -42,6 +42,8 @@ namespace cbn
 
             bool is_checkmated(const Piece_color& color);
 
+            bool is_draw(const Piece_color& color);
+
         private:
             void move_piece(const ChessNotation& move);
 
@@ -89,6 +91,7 @@ std::ostream& cbn::operator<<(std::ostream& os, const cbn::ChessBoard& cb)
 void cbn::ChessBoard::restore()
 {
     board = DEFAULT_CHESS_BOARD;
+    moving_turn = Piece_color::White;
 }
 
 cbn::Piece& cbn::ChessBoard::operator[](const cbn::ChessCoordinate& location)
@@ -656,6 +659,35 @@ bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
 
 bool cbn::ChessBoard::is_checkmated(const cbn::Piece_color& color)
 // return if color is checkmated and the game is over
+{
+    lmn::Legalmoves legal(*this);
+
+    // iterate all pieces
+    for (int row_i = 0; row_i < board.size(); ++row_i)
+    {
+        const auto& row = board[row_i];
+        for (int piece_i = 0; piece_i < row.size(); ++piece_i)
+        {
+            ChessCoordinate current{piece_i, row_i};
+            const auto& piece = operator[](current);
+            if (piece.color != color && piece.type != cbn::Piece_type::King)   // if not same color and not king piece
+                continue;
+
+            const auto coords = legal(current);
+            
+            // iterate over legal moves of current square
+            for (const auto& coord : coords)
+            {
+                // if no legal moves that are saving the king
+                if (move_is_unchecking({current, coord}))
+                    return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool cbn::ChessBoard::is_draw(const cbn::Piece_color& color)
 {
     lmn::Legalmoves legal(*this);
 
