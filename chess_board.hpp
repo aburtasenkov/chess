@@ -57,7 +57,7 @@ namespace cbn
     class TemporalMove{
         public:
             TemporalMove(ChessBoard& b, const ChessNotation& m)
-                :board(b), move_history(b.get_history()), move(m)
+                :board(b), move_history(b.get_history()), move(m), temp_to(board[move.to])
             {
                 board[move.to] = board[move.from];
                 board[move.from] = EMPTY_SQUARE;
@@ -71,7 +71,7 @@ namespace cbn
             ChessBoard& board;
             notation_container& move_history;
             const ChessNotation& move;
-            Piece temp_to{};        
+            const Piece temp_to{};        
     };
 
     /****************************************************Function declaration************************************************************************************/
@@ -173,7 +173,7 @@ namespace lmn
     class Legalmoves
     {
         public:
-            Legalmoves(const cbn::ChessBoard& b)
+            Legalmoves(cbn::ChessBoard& b)
                 :board(b)   {   }
             
             // calculate all legal moves for piece at location
@@ -196,7 +196,7 @@ namespace lmn
             void append_legalmoves_king(const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_castling(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& rook_location);
             
-            const cbn::ChessBoard& board;
+            cbn::ChessBoard& board;
             cbn::coordinate_container move_list;
     };
 
@@ -434,6 +434,9 @@ void lmn::Legalmoves::append_castling(const cbn::ChessCoordinate& location, cons
         castle_location = location - cbn::ChessCoordinate{cbn::CASTLE_OFFSET, 0};
     else
         castle_location = location + cbn::ChessCoordinate{cbn::CASTLE_OFFSET, 0};
+    
+    if (!castle_location.is_valid())
+        return;
 
     // no pieces between king and rook
     if (cbn::coordinates_are_empty(board, coordinates_between_pieces))
