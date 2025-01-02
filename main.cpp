@@ -2,9 +2,6 @@
 using namespace cbn;
 using namespace lmn;
 
-ChessBoard board;
-Legalmoves legal{board};
-
 template <typename T, typename TT>
 std::ostream& operator<<(std::ostream& os, const std::pair<T,TT>& pair)
 {
@@ -20,28 +17,37 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
     return os;
 }
 
+ChessBoard board;
+Legalmoves legal{board};
+
 int main()
 {
-    ChessNotation move;
-
     while (true)
     try {
+        ChessCoordinate from, to;
+        
         std::cout << board;
 
-        std::cin >> move;
+        std::cin >> from;
 
-        if (!(board[move.from].color == board.colors_turn()))
+        const auto& move_list = legal(from);
+
+        std::cout << "List of all legal moves: " << move_list << "\n";
+
+        std::cin >> to;
+
+        ChessNotation move{from, to};
+
+        if (board[move.from].color != board.colors_turn())
             throw BadSequenceError;
-
-        const auto& move_list = legal(move.from);
 
         if (board.is_checked(board.colors_turn()))
         {
             if (!board.move_is_unchecking(move))
+            {
                 throw KingIsCheckedError;
+            }
         }
-
-        std::cout << "List of all legal moves: " << move_list << "\n";
 
         board.move(move_list, move);
 
@@ -55,6 +61,7 @@ int main()
             else
                 std::cout << "Check\n";
         }
+
     }
     catch (Exception& e)
     {
