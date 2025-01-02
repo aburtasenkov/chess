@@ -125,7 +125,7 @@ bool cbn::ChessBoard::piece_was_moved(const cbn::ChessCoordinate& x) const
 {
     for (const auto& move : move_history)
     {
-        if (move.from == x)
+        if (move.to == x)
             return true;
     }
     return false;
