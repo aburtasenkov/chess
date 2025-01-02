@@ -40,6 +40,8 @@ namespace cbn
 
             bool move_is_unchecking(const ChessNotation& move);
 
+            bool is_checkmated(const Piece_color& color);
+
         private:
             void move_piece(const ChessNotation& move);
 
@@ -650,4 +652,33 @@ bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
     to = temp;
 
     return output_value;
+}
+
+bool cbn::ChessBoard::is_checkmated(const cbn::Piece_color& color)
+// return if color is checkmated and the game is over
+{
+    // lmn::Legalmoves legal(*this);
+
+    // // iterate all pieces
+    // for (int row_i = 0; row_i < board.size(); ++row_i)
+    // {
+    //     const auto& row = board[row_i];
+    //     for (int piece_i = 0; piece_i < row.size(); ++piece_i)
+    //     {
+    //         ChessCoordinate current{piece_i, row_i};
+    //         const auto& piece = operator[](current);
+    //         if (piece.color != color && piece.type != cbn::Piece_type::King)   // if not same color and not king piece
+    //             continue;
+
+    //         const auto coords = legal(current);
+            
+    //         // iterate over legal moves of current square
+    //         for (const auto& coord : coords)
+    //         {
+    //             if (move_is_unchecking({current, coord}))
+    //                 return false;
+    //         }
+    //     }
+    // }
+    return true;
 }
