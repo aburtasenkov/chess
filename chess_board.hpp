@@ -703,15 +703,10 @@ bool cbn::ChessBoard::is_game_over(const cbn::Piece_color& color)
             if (piece.color != color) 
                 continue;
 
-            const auto potential = legal.get_potential_moves(current);
+            const auto move_list = legal.get_legal_moves(current);
             
-            // iterate over legal moves of current square
-            for (const auto& move_to : potential)
-            {
-                // if no legal moves that are saving the king
-                if (move_is_unchecking({current, move_to}))
-                    return false;
-            }
+            if (move_list.size() > 0)
+                return false;
         }
     }
     return true;
