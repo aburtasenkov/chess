@@ -181,7 +181,6 @@ namespace lmn
             const cbn::coordinate_container& get_potential_moves(const cbn::ChessCoordinate& location);
         
         private:
-            void append_legalmoves(const cbn::ChessCoordinate& location);
             void append_legalmoves_pawn(const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_legalmoves_pawn_eating(const cbn::ChessCoordinate& location, std::initializer_list<cbn::ChessCoordinate> list);
             void append_en_passant(const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
@@ -444,6 +443,16 @@ const cbn::coordinate_container& lmn::Legalmoves::get_legal_moves(const cbn::Che
     move_list = cbn::coordinate_container{};
     get_potential_moves(location);
 
+    for (auto iter = move_list.begin(); iter != move_list.end();)
+    {
+        cbn::TemporalMove _{board, {location, *iter}};
+
+        if (board.is_checked(board[*iter].color))
+            move_list.erase(iter);
+        else
+            ++iter;
+    }
+
     std::sort(move_list.begin(), move_list.end());
     return move_list;
 }
@@ -502,7 +511,6 @@ const cbn::coordinate_container& lmn::Legalmoves::get_potential_moves(const cbn:
         for (const auto& [offset_x, offset_y] : offsets)
             append_legalmoves_king(location, offset_x, offset_y);
         
-
         cbn::ChessCoordinate left_rook, right_rook;
         if (board[location].color == cbn::Piece_color::White)
         {
@@ -641,6 +649,7 @@ void cbn::ChessBoard::move_piece(const ChessNotation& move)
 }
 
 bool cbn::ChessBoard::is_checked(const Piece_color& color)
+// return if color is checked
 {
     lmn::Legalmoves legal(*this);
 
@@ -659,7 +668,7 @@ bool cbn::ChessBoard::is_checked(const Piece_color& color)
             // iterate over legal moves of current square
             for (const auto& coord : coords)
             {
-                if (operator[](coord).type == Piece_type::King)
+                if (operator[](coord).type == Piece_type::King && operator[](coord).color == color)
                     return true;
             }
         }
