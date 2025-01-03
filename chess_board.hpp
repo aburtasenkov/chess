@@ -177,12 +177,11 @@ namespace lmn
                 :board(b)   {   }
             
             // calculate all legal moves for piece at location
-            const cbn::coordinate_container& operator()(const cbn::ChessCoordinate& location);
-
-            const cbn::coordinate_container& get_moves() const;
+            const cbn::coordinate_container& get_legal_moves(const cbn::ChessCoordinate& location);
+            const cbn::coordinate_container& get_potential_moves(const cbn::ChessCoordinate& location);
         
         private:
-
+            void append_legalmoves(const cbn::ChessCoordinate& location);
             void append_legalmoves_pawn(const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
             void append_legalmoves_pawn_eating(const cbn::ChessCoordinate& location, std::initializer_list<cbn::ChessCoordinate> list);
             void append_en_passant(const cbn::ChessCoordinate& location, const int offset_x, const int offset_y);
@@ -204,11 +203,6 @@ namespace lmn
 };
 
 /*******************************************************************Function definition*********************************************************************/
-
-const cbn::coordinate_container& lmn::Legalmoves::get_moves() const
-{
-    return move_list;
-}
 
 bool cbn::ChessBoard::is_castle(const cbn::ChessNotation& move) const
 // return if the move is a castle or not
@@ -444,12 +438,19 @@ void lmn::Legalmoves::append_castling(const cbn::ChessCoordinate& location, cons
 
     return;
 }
-     
-const cbn::coordinate_container& lmn::Legalmoves::operator()(const cbn::ChessCoordinate& location)
-// return a container containing all legal moves for kind located at location
+
+const cbn::coordinate_container& lmn::Legalmoves::get_legal_moves(const cbn::ChessCoordinate& location)
 {
     move_list = cbn::coordinate_container{};
+    get_potential_moves(location);
 
+    std::sort(move_list.begin(), move_list.end());
+    return move_list;
+}
+
+const cbn::coordinate_container& lmn::Legalmoves::get_potential_moves(const cbn::ChessCoordinate& location)
+// return a container containing all legal moves for kind located at location
+{
     if (board[location].type == cbn::Piece_type::Rook || board[location].type == cbn::Piece_type::Queen)
     {
         // create pairs of all directions for rooks move
@@ -517,8 +518,6 @@ const cbn::coordinate_container& lmn::Legalmoves::operator()(const cbn::ChessCoo
         append_castling(location, left_rook);
         append_castling(location, right_rook);
     }
-
-    std::sort(move_list.begin(), move_list.end());
 
     return move_list;
 }
@@ -655,7 +654,7 @@ bool cbn::ChessBoard::is_checked(const Piece_color& color)
             if (operator[](current).color != enemy_color.at(color))   // if enemy to current moving color
                 continue;
 
-            const auto coords = legal(current);
+            const auto coords = legal.get_potential_moves(current);
             
             // iterate over legal moves of current square
             for (const auto& coord : coords)
@@ -695,7 +694,7 @@ bool cbn::ChessBoard::is_checkmated(const cbn::Piece_color& color)
             if (piece.color != color && piece.type != cbn::Piece_type::King)   // if not same color and not king piece
                 continue;
 
-            const auto coords = legal(current);
+            const auto coords = legal.get_potential_moves(current);
             
             // iterate over legal moves of current square
             for (const auto& coord : coords)
@@ -724,7 +723,7 @@ bool cbn::ChessBoard::is_draw(const cbn::Piece_color& color)
             if (piece.color != color && piece.type != cbn::Piece_type::King)   // if not same color and not king piece
                 continue;
 
-            const auto coords = legal(current);
+            const auto coords = legal.get_potential_moves(current);
             
             // iterate over legal moves of current square
             for (const auto& coord : coords)

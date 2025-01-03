@@ -30,7 +30,7 @@ int main()
 
         std::cin >> from;
 
-        const auto& move_list = legal(from);
+        const auto& move_list = legal.get_legal_moves(from);
 
         std::cout << "List of all legal moves: " << move_list << "\n";
 
