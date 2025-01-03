@@ -53,7 +53,7 @@ int main()
 
         if (board.is_checked(board.colors_turn()))
         {
-            if (board.is_checkmated(board.colors_turn()))
+            if (board.is_game_over(board.colors_turn()))
                 {
                     std::cout << "CHECKMATE\n";
                     board.restore();
@@ -61,6 +61,9 @@ int main()
             else
                 std::cout << "Check\n";
         }
+
+        if (board.is_game_over(board.colors_turn()))
+            std::cout << "ITS DRAW\n";
 
     }
     catch (Exception& e)

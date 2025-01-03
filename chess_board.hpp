@@ -40,9 +40,7 @@ namespace cbn
 
             bool move_is_unchecking(const ChessNotation& move);
 
-            bool is_checkmated(const Piece_color& color);
-
-            bool is_draw(const Piece_color& color);
+            bool is_game_over(const Piece_color& color);
 
             notation_container& get_history();
 
@@ -445,8 +443,8 @@ const cbn::coordinate_container& lmn::Legalmoves::get_legal_moves(const cbn::Che
 
     for (auto iter = move_list.begin(); iter != move_list.end();)
     {
-        cbn::TemporalMove _{board, {location, *iter}};
-
+        cbn::ChessNotation move{location, *iter};
+        cbn::TemporalMove _{board, move};
         if (board.is_checked(board[*iter].color))
             move_list.erase(iter);
         else
@@ -660,7 +658,7 @@ bool cbn::ChessBoard::is_checked(const Piece_color& color)
         for (int piece_i = 0; piece_i < row.size(); ++piece_i)
         {
             ChessCoordinate current{piece_i, row_i};
-            if (operator[](current).color != enemy_color.at(color))   // if enemy to current moving color
+            if (operator[](current).color == color)   // if not enemy to current moving color
                 continue;
 
             const auto coords = legal.get_potential_moves(current);
@@ -687,8 +685,8 @@ bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
     return output_value;
 }
 
-bool cbn::ChessBoard::is_checkmated(const cbn::Piece_color& color)
-// return if color is checkmated and the game is over
+bool cbn::ChessBoard::is_game_over(const cbn::Piece_color& color)
+// return if color has no legal moevs to do
 {
     lmn::Legalmoves legal(*this);
 
@@ -700,16 +698,18 @@ bool cbn::ChessBoard::is_checkmated(const cbn::Piece_color& color)
         {
             ChessCoordinate current{piece_i, row_i};
             const auto& piece = operator[](current);
-            if (piece.color != color && piece.type != cbn::Piece_type::King)   // if not same color and not king piece
+
+            // check if enemy color
+            if (piece.color != color) 
                 continue;
 
-            const auto coords = legal.get_potential_moves(current);
+            const auto potential = legal.get_potential_moves(current);
             
             // iterate over legal moves of current square
-            for (const auto& coord : coords)
+            for (const auto& move_to : potential)
             {
                 // if no legal moves that are saving the king
-                if (move_is_unchecking({current, coord}))
+                if (move_is_unchecking({current, move_to}))
                     return false;
             }
         }
@@ -717,31 +717,3 @@ bool cbn::ChessBoard::is_checkmated(const cbn::Piece_color& color)
     return true;
 }
 
-bool cbn::ChessBoard::is_draw(const cbn::Piece_color& color)
-{
-    lmn::Legalmoves legal(*this);
-
-    // iterate all pieces
-    for (int row_i = 0; row_i < board.size(); ++row_i)
-    {
-        const auto& row = board[row_i];
-        for (int piece_i = 0; piece_i < row.size(); ++piece_i)
-        {
-            ChessCoordinate current{piece_i, row_i};
-            const auto& piece = operator[](current);
-            if (piece.color != color && piece.type != cbn::Piece_type::King)   // if not same color and not king piece
-                continue;
-
-            const auto coords = legal.get_potential_moves(current);
-            
-            // iterate over legal moves of current square
-            for (const auto& coord : coords)
-            {
-                // if no legal moves that are saving the king
-                if (move_is_unchecking({current, coord}))
-                    return false;
-            }
-        }
-    }
-    return true;
-}
