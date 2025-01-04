@@ -55,19 +55,20 @@ namespace cbn
     class TemporalMove{
         public:
             TemporalMove(ChessBoard& b, const ChessNotation& m)
-                :board(b), move_history(b.get_history()), move(m), temp_to(board[move.to])
+                :board(b), move(m), temp_to(board[move.to])
             {
+                // move pieces
                 board[move.to] = board[move.from];
                 board[move.from] = EMPTY_SQUARE;
             }
             ~TemporalMove()
             {
+                // restore previous state
                 board[move.from] = board[move.to];
                 board[move.to] = temp_to;
             }
         private:
             ChessBoard& board;
-            notation_container& move_history;
             const ChessNotation& move;
             const Piece temp_to{};        
     };
