@@ -228,7 +228,7 @@ bool cbn::ChessBoard::passant_is_legal(const cbn::ChessCoordinate& location, con
 // location is the current piece, square is the piece left or right of it
 {
     // check so i can call get_piece_data
-    if (!is_empty(operator[](square)))
+    if (is_empty(operator[](square)))
         return false;
 
     if (!is_enemy(location, square))
@@ -240,7 +240,7 @@ bool cbn::ChessBoard::passant_is_legal(const cbn::ChessCoordinate& location, con
     // same character rank and move difference is 2
     if (last_move().from.character != last_move().to.character)
         return false;
-    if (abs(last_move().from.integer - last_move().to.integer) == 2)
+    if (abs(last_move().from.integer - last_move().to.integer) != 2)
         return false;
     
     // need to be close to each other
@@ -326,9 +326,9 @@ void lmn::Legalmoves::append_en_passant(const cbn::ChessCoordinate& location, co
         const cbn::ChessNotation& last_move = board.last_move();
 
         if (board[location].color == cbn::Piece_color::White)
-            en_passant_coordinate = last_move.to + cbn::ChessCoordinate{0, -offset_y};  // move up from last move
+            en_passant_coordinate = square + cbn::ChessCoordinate{0, -offset_y};  // move up from last move
         else
-            en_passant_coordinate = last_move.to + cbn::ChessCoordinate{0, offset_y};   // move down from last move
+            en_passant_coordinate = square + cbn::ChessCoordinate{0, offset_y};   // move down from last move
 
         move_list.push_back(en_passant_coordinate);
     }
@@ -598,7 +598,7 @@ void cbn::ChessBoard::move(const cbn::coordinate_container& move_list, const cbn
             if (passant_is_legal(move.from, last.to))
             {
                 // if pawn moves diagonally
-                if (last.to.character != move.to.character)
+                if (last.to.character == move.to.character)
                     operator[](last.to) = EMPTY_SQUARE; // remove the last moved piece
             }
         }
