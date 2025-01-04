@@ -113,6 +113,15 @@ namespace chess_constants
 
     const int LEFT_CASTLE_CHARACTER = 2;
     const int RIGHT_CASTLE_CHARACTER = 6;
+
+    const std::map<helper_classes::Piece_type, int> piece_score
+    {
+        {helper_classes::Piece_type::Pawn, 1},
+        {helper_classes::Piece_type::Knight, 3},
+        {helper_classes::Piece_type::Bishop, 3},
+        {helper_classes::Piece_type::Rook, 5},
+        {helper_classes::Piece_type::Queen, 9},
+    };
 }
 
 namespace chess_pieces
