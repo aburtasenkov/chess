@@ -121,6 +121,7 @@ namespace chess_constants
         {helper_classes::Piece_type::Bishop, 3},
         {helper_classes::Piece_type::Rook, 5},
         {helper_classes::Piece_type::Queen, 9},
+        {helper_classes::Piece_type::King, 0},
     };
 }
 
