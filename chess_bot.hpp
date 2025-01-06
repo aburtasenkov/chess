@@ -3,6 +3,8 @@
 
 namespace cbot
 {
+    const int MAX_MULTIPLIER = 5;
+
     bool coordinate_in_range(const cbn::ChessCoordinate& A, const cbn::ChessCoordinate& B, const cbn::ChessCoordinate& C)
     // return true if C is somewhere between A and B
     {
@@ -21,7 +23,7 @@ namespace cbot
     // return multiplier factor for the piece depending on the location
     {
         auto square_list = cbn::coordinates_between_xy(location, cbn::ChessCoordinate{cbn::CHESS_BOARD_SIZE / 2, cbn::CHESS_BOARD_SIZE / 2});
-        return 8 - square_list.size();
+        return MAX_MULTIPLIER - square_list.size();
     }
 
     int board_score(const cbn::ChessBoard& board, const cbn::Piece_color& color)
