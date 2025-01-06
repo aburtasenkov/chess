@@ -44,6 +44,8 @@ namespace cbn
 
             notation_container& get_history();
 
+            bool only_contains(const Piece_type& type);
+
         private:
             void move_piece(const ChessNotation& move);
 
@@ -89,6 +91,27 @@ namespace cbn
 }
 
 /**************************************************************************************Function definition*******************************************************************/
+
+bool cbn::ChessBoard::only_contains(const Piece_type& type)
+// return true if chess board has only pieces of *type* or *EMPTY_SQUARE.type*
+{
+    // iterate all pieces
+    for (int row_i = 0; row_i < board.size(); ++row_i)
+    {
+        const auto& row = board[row_i];
+        for (int piece_i = 0; piece_i < row.size(); ++piece_i)
+        {
+            ChessCoordinate current{piece_i, row_i};
+            const auto& piece = operator[](current);
+
+            if (piece.type == EMPTY_SQUARE.type || piece.type == type)
+                continue;
+            else
+                return false;
+        }
+    }
+    return true;
+}
 
 cbn::notation_container& cbn::ChessBoard::get_history()
 {
@@ -690,6 +713,9 @@ bool cbn::ChessBoard::is_game_over(const cbn::Piece_color& color)
 // return if color has no legal moevs to do
 {
     lmn::Legalmoves legal(*this);
+
+    if (only_contains(cbn::Piece_type::King))
+        return true;
 
     // iterate all pieces
     for (int row_i = 0; row_i < board.size(); ++row_i)
