@@ -1,4 +1,5 @@
 #include "chess_board.hpp"
+#include <limits>
 
 namespace cbot
 {
@@ -80,13 +81,15 @@ public:
         // after iterating over each move
         return cbn::ChessNotation{};
     }
-    cbn::ChessNotation best_move(cbn::ChessBoard& board, const cbn::ChessCoordinate& move_from, const int iterations)
+    cbn::ChessNotation best_move(cbn::ChessBoard& board, const cbn::ChessCoordinate& move_from)
+    // return the current best move for move_from
+    // Prototype, TODO
     {
-        //      - get all legal moves for the current piece, for each piece ->
-        //          - TemporalMove it
-        //          - calculate current score ( influenced by piece it ate and location of the piece )
-        //          - save best score and the corresponding move
         lmn::Legalmoves legal(board);
+        cbn::Piece current_piece = board[move_from];
+
+        cbn::ChessNotation best_notation{};
+        double best_score = std::numeric_limits<double>::lowest();  // lowest best score possible for double as staring point
 
         // get all legal moves for the current piece
         const auto& move_to_list = legal.get_legal_moves(move_from);
@@ -99,9 +102,14 @@ public:
             cbn::TemporalMove{board, notation};
 
             // calculate current score
-            double score = cbot::board_score(board, board[notation.to].color);
-            
+            double score = cbot::board_score(board, current_piece.color);
+
+            if (score > best_score)
+            {
+                best_notation = notation;
+                best_score = score;
+            }
         }
-        return cbn::ChessNotation{};
+        return best_notation;
     }
 };
