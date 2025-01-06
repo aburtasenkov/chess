@@ -190,4 +190,14 @@ namespace chess_notation
         notation.to.assert_data();
         return is; 
     } 
+
+    bool operator==(const ChessNotation& x, const ChessNotation& y)
+    {
+        return (x.from == y.from && x.to == y.to);
+    }
+
+    bool operator!=(const ChessNotation& x, const ChessNotation& y)
+    {
+        return !operator==(x, y);
+    }
 }
