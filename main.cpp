@@ -1,4 +1,4 @@
-#include "chess_board.hpp"
+#include "chess_bot.hpp"
 using namespace cbn;
 using namespace lmn;
 
@@ -17,8 +17,9 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
     return os;
 }
 
-ChessBoard board;
+ChessBoard board{};
 Legalmoves legal{board};
+ChessBot bot{};
 
 int main()
 {
@@ -49,7 +50,14 @@ int main()
             }
         }
 
+        const auto best_move = bot.best_move(board, move.from);
+
         board.move(move_list, move);
+        
+        if (move != best_move)
+            std::cout << "Better move would be - " << best_move << "\n";
+
+        std::cout << "New Score is - " << cbot::board_score(board, board[move.to].color) << "\n";
 
         if (board.is_checked(board.colors_turn()))
         {
