@@ -17,23 +17,18 @@ namespace cbot
         return true;
     }
 
-    double multiplier_table(const cbn::ChessCoordinate& location)
+    int multiplier_table(const cbn::ChessCoordinate& location)
     // return multiplier factor for the piece depending on the location
     {
-        if (coordinate_in_range(cbn::ChessCoordinate{3,3}, cbn::ChessCoordinate{4,4}, location))    // inner cirle
-            return 2;
-        if (coordinate_in_range(cbn::ChessCoordinate{2,2}, cbn::ChessCoordinate{5,5}, location))    // one step out
-            return 1.5;
-        if (coordinate_in_range(cbn::ChessCoordinate{1,1}, cbn::ChessCoordinate{6,6}, location))    // one more step out
-            return 1;
-        return 0.5;
+        auto square_list = cbn::coordinates_between_xy(location, cbn::ChessCoordinate{cbn::CHESS_BOARD_SIZE / 2, cbn::CHESS_BOARD_SIZE / 2});
+        return 8 - square_list.size();
     }
 
-    double board_score(const cbn::ChessBoard& board, const cbn::Piece_color& color)
+    int board_score(const cbn::ChessBoard& board, const cbn::Piece_color& color)
     // return the board score for color
     // Influenced by piece and its location
     {
-        double score = 0;
+        int score = 0;
 
         // iterate over each piece of the board
         for (int rank_index = 0; rank_index < cbn::CHESS_BOARD_SIZE; ++rank_index)
@@ -89,7 +84,7 @@ public:
         cbn::Piece current_piece = board[move_from];
 
         cbn::ChessNotation best_notation{};
-        double best_score = std::numeric_limits<double>::lowest();  // lowest best score possible for double as staring point
+        int best_score = std::numeric_limits<int>::lowest();  // lowest best score possible for int as staring point
 
         // get all legal moves for the current piece
         const auto& move_to_list = legal.get_legal_moves(move_from);
@@ -102,7 +97,7 @@ public:
             cbn::TemporalMove{board, notation};
 
             // calculate current score
-            double score = cbot::board_score(board, current_piece.color);
+            int score = cbot::board_score(board, current_piece.color);
 
             if (score > best_score)
             {
