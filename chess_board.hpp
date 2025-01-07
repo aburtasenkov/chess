@@ -34,7 +34,7 @@ namespace cbn
 
             bool passant_is_legal(const cbn::ChessCoordinate& location, const cbn::ChessCoordinate& square) const;
 
-            const Piece_color& colors_turn() const;
+            Piece_color& colors_turn();
 
             bool is_checked(const Piece_color& color);
 
@@ -62,12 +62,14 @@ namespace cbn
                 // move pieces
                 board[move.to] = board[move.from];
                 board[move.from] = EMPTY_SQUARE;
+                board.colors_turn() = enemy_color.at(board.colors_turn());
             }
             ~TemporalMove()
             {
                 // restore previous state
                 board[move.from] = board[move.to];
                 board[move.to] = temp_to;
+                board.colors_turn() = enemy_color.at(board.colors_turn());
             }
         private:
             ChessBoard& board;
@@ -183,7 +185,7 @@ bool cbn::ChessBoard::piece_was_moved(const cbn::ChessCoordinate& x) const
     return false;
 }
 
-const cbn::Piece_color& cbn::ChessBoard::colors_turn() const
+cbn::Piece_color& cbn::ChessBoard::colors_turn()
 {
     return moving_turn;
 }
@@ -703,7 +705,7 @@ bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
     bool output_value = false;
     TemporalMove temporal(*this, move);
 
-    if (!is_checked(moving_turn))
+    if (!is_checked(enemy_color.at(moving_turn)))
         output_value = true;
 
     return output_value;
