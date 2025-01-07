@@ -1,11 +1,10 @@
-#include "chess_board.hpp"
 #include "chess_bot_constants.hpp"
 #include <limits>
 
 namespace cbot
 {
     using namespace cbot_constants;
-    
+
     bool coordinate_in_range(const cbn::ChessCoordinate& A, const cbn::ChessCoordinate& B, const cbn::ChessCoordinate& C)
     // return true if C is somewhere between A and B
     {
@@ -20,18 +19,17 @@ namespace cbot
         return true;
     }
 
-    int multiplier_table(const cbn::ChessCoordinate& location)
+    double multiplier_table(const cbn::ChessCoordinate& location)
     // return multiplier factor for the piece depending on the location
     {
-        auto square_list = cbn::coordinates_between_xy(location, cbn::ChessCoordinate{cbn::CHESS_BOARD_SIZE / 2, cbn::CHESS_BOARD_SIZE / 2});
-        return MAX_MULTIPLIER - square_list.size();
+        return 0;
     }
 
-    int board_score(const cbn::ChessBoard& board, const cbn::Piece_color& color)
+    double board_score(const cbn::ChessBoard& board, const cbn::Piece_color& color)
     // return the board score for color
     // Influenced by piece and its location
     {
-        int score = 0;
+        double score = 0;
 
         // iterate over each piece of the board
         for (int rank_index = 0; rank_index < cbn::CHESS_BOARD_SIZE; ++rank_index)
@@ -87,7 +85,7 @@ public:
         cbn::Piece current_piece = board[move_from];
 
         cbn::ChessNotation best_notation{};
-        int best_score = std::numeric_limits<int>::lowest();  // lowest best score possible for int as staring point
+        double best_score = std::numeric_limits<int>::lowest();  // lowest best score possible for double as staring point
 
         // get all legal moves for the current piece
         const auto& move_to_list = legal.get_legal_moves(move_from);
@@ -100,7 +98,7 @@ public:
             cbn::TemporalMove{board, notation};
 
             // calculate current score
-            int score = cbot::board_score(board, current_piece.color);
+            double score = cbot::board_score(board, current_piece.color);
 
             if (score > best_score)
             {
