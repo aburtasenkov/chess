@@ -83,4 +83,14 @@ namespace cbot_constants
         {cbn::Piece_type::King, multiplier_table_king},
         {cbn::Piece_type::Queen, multiplier_table_queen},
     };
+
+    const std::map<cbn::Piece_type, int> piece_score
+    {
+        {cbn::Piece_type::Pawn, 1},
+        {cbn::Piece_type::Knight, 3},
+        {cbn::Piece_type::Bishop, 3},
+        {cbn::Piece_type::Rook, 5},
+        {cbn::Piece_type::Queen, 9},
+        {cbn::Piece_type::King, 0},
+    };
 }
