@@ -1,10 +1,11 @@
 #include "chess_board.hpp"
+#include "chess_bot_constants.hpp"
 #include <limits>
 
 namespace cbot
 {
-    const int MAX_MULTIPLIER = 5;
-
+    using namespace cbot_constants;
+    
     bool coordinate_in_range(const cbn::ChessCoordinate& A, const cbn::ChessCoordinate& B, const cbn::ChessCoordinate& C)
     // return true if C is somewhere between A and B
     {
