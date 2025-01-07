@@ -1,9 +1,7 @@
-#include <array>
+#include "chess_board.hpp"
 
 namespace cbot_constants
 {
-    const int MAX_MULTIPLIER = 5;
-
     const std::array<std::array<double, 8>, 8> multiplier_table_pawn
     {{
         { 0.0, 0.1, 0.1, 0.2, 0.2, 0.1, 0.1, 0.0 },
@@ -75,4 +73,14 @@ namespace cbot_constants
         { -0.6, -0.6, -0.6, -0.6, -0.6, -0.6, -0.6, -0.6 },
         { -0.6, -0.6, -0.6, -0.6, -0.6, -0.6, -0.6, -0.6 }
     }};
+
+    std::map<cbn::Piece_type, const std::array<std::array<double, 8>, 8>&> multiplier_map
+    {
+        {cbn::Piece_type::Pawn, multiplier_table_pawn},
+        {cbn::Piece_type::Knight, multiplier_table_knight},
+        {cbn::Piece_type::Rook, multiplier_table_rook},
+        {cbn::Piece_type::Bishop, multiplier_table_bishop},
+        {cbn::Piece_type::King, multiplier_table_king},
+        {cbn::Piece_type::Queen, multiplier_table_queen},
+    };
 }
