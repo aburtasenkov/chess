@@ -19,10 +19,11 @@ namespace cbot
         return true;
     }
 
-    double multiplier_table(const cbn::ChessCoordinate& location)
+    double multiplier_table(const cbn::Piece_type& type, const cbn::ChessCoordinate& location)
     // return multiplier factor for the piece depending on the location
     {
-        return 0;
+        const auto& table = multiplier_map.at(type);
+        return table[location.integer][location.character];
     }
 
     double board_score(const cbn::ChessBoard& board, const cbn::Piece_color& color)
@@ -43,7 +44,7 @@ namespace cbot
                 if (current_piece.color != color)
                     continue;
 
-                score += cbn::piece_score.at(current_piece.type) * multiplier_table(current);
+                score += piece_score.at(current_piece.type) * multiplier_table(current_piece.type, current);
             }
         }
         return score;
