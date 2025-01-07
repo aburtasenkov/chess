@@ -55,8 +55,16 @@ class ChessBot{
 public:
     ChessBot()  {   }
 
-    cbn::ChessNotation next_move(cbn::ChessBoard board, const cbn::Piece_color& moving_color, const int iterations)
+    std::pair<cbn::ChessNotation, double> next_move(cbn::ChessBoard board, const cbn::Piece_color& moving_color, const int depth = 1)
     {
+        cbn::ChessNotation best_notation{};
+        double best_score = std::numeric_limits<int>::lowest();  // lowest best score possible for double as staring point
+
+        if (depth == 0)
+            return {};
+
+        lmn::Legalmoves legal{board};
+
         // iterate over each piece of the board
         for (int rank_index = 0; rank_index < cbn::CHESS_BOARD_SIZE; ++rank_index)
         {
@@ -70,20 +78,20 @@ public:
                     continue;
             }
         }
-        // best_move(cbn::ChessBoard, const cbn::ChessCoordinate& move_from, const int iterations):
+        // best_move(cbn::ChessBoard, const cbn::ChessCoordinate& move_from, const int depth):
         //      - get all legal moves for the current piece, for each piece ->
         //          - TemporalMove it
         //          - calculate current score ( influenced by piece it ate and location of the piece )
         //          - save best score and the corresponding move
         // after iterating over each move
-        return cbn::ChessNotation{};
+        return {best_notation, best_score};
     }
-    cbn::ChessNotation best_move(cbn::ChessBoard& board, const cbn::ChessCoordinate& move_from)
+    cbn::ChessNotation best_move(cbn::ChessBoard& board, const cbn::ChessCoordinate& move_from, const int depth = 1)
     // return the current best move for move_from
     // Prototype, TODO
     {
         lmn::Legalmoves legal(board);
-        cbn::Piece current_piece = board[move_from];
+        const cbn::Piece current_piece = board[move_from];
 
         cbn::ChessNotation best_notation{};
         double best_score = std::numeric_limits<int>::lowest();  // lowest best score possible for double as staring point
