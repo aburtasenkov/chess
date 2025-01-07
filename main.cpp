@@ -21,10 +21,21 @@ ChessBoard board{};
 Legalmoves legal{board};
 ChessBot bot{};
 
+const int COMPUTATION_DEPTH = 4;
+
 int main()
 {
     while (true)
     try {
+        // Bot is moving
+        if (board.colors_turn() == Piece_color::Black)
+        {
+            const auto notation = bot.next_notation(board, COMPUTATION_DEPTH);
+            const auto& move_list = legal.get_legal_moves(notation.from);
+            board.move(move_list, notation);
+            continue;
+        }
+        
         ChessCoordinate from, to;
         
         std::cout << board;
@@ -50,12 +61,12 @@ int main()
             }
         }
 
-        const auto best_move = bot.best_move(board, move.from);
+        // const auto best_move = bot.best_move(board, move.from);
 
         board.move(move_list, move);
         
-        if (move != best_move)
-            std::cout << "Better move would be - " << best_move << "\n";
+        // if (move != best_move)
+        //     std::cout << "Better move would be - " << best_move << "\n";
 
         std::cout << "New Score is - " << cbot::board_score(board, board[move.to].color) << "\n";
 
