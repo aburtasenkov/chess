@@ -1,5 +1,7 @@
-#include <vector>
+#pragma once
+
 #include <algorithm>
+
 #include "chess_notation.hpp"
 #include "chess_board_constants.hpp"
 
@@ -7,6 +9,7 @@ namespace cbn
 {
     using namespace chess_notation;
     using namespace chess_pieces;
+
     using coordinate_container = container_type<ChessCoordinate, allocator_type<ChessCoordinate>>;
     using notation_container = container_type<ChessNotation, allocator_type<ChessNotation>>;
 

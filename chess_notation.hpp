@@ -1,5 +1,8 @@
+#pragma once
+
 #include <iostream>
 #include <assert.h>
+
 #include "Exception.hpp"
 
 namespace chess_notation

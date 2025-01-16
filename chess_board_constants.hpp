@@ -1,6 +1,10 @@
+#pragma once
+
 #include <map>
-#include <array>
+#include <string_view>
+
 #include "Board.hpp"
+#include "Exception.hpp"
 
 namespace chess_types
 {

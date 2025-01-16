@@ -1,8 +1,9 @@
 #pragma once
 
+#include <limits>
+
 #include "chess_bot_constants.hpp"
 #include "chess_board.hpp"
-#include <limits>
 
 namespace cbot
 {

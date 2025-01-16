@@ -1,3 +1,6 @@
+#include <iostream>
+#include <vector>
+
 #include "chess_bot.hpp"
 #include "chess_board.hpp"
 

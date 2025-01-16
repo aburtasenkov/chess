@@ -1,3 +1,8 @@
+#pragma once
+
+#include <array>
+#include <map>
+
 #include "chess_board.hpp"
 
 namespace cbot_constants
