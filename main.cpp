@@ -29,8 +29,9 @@ Engine bot{};
 
 const int COMPUTATION_DEPTH = 4;
 
-int main()
+int main(int size, char** argv)
 {
+    std::cout << size << "\n";
     while (true)
     try {
         // Bot is moving
