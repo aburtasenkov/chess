@@ -10,7 +10,7 @@ namespace chess_types
     template <typename T>
     using allocator_type = std::allocator<T>;
         
-    using value_type = std::string;     // std::string because it is not bound to 1 byte of data --> no overflow
+    using value_type = std::string_view;     // std::string because it is not bound to 1 byte of data --> no overflow
 }
 
 namespace helper_classes
