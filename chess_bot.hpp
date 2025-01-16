@@ -1,4 +1,7 @@
+#pragma once
+
 #include "chess_bot_constants.hpp"
+#include "chess_board.hpp"
 #include <limits>
 
 namespace cbot
@@ -49,104 +52,104 @@ namespace cbot
         }
         return score;
     }
-}
 
-class ChessBot{
-public:
-    ChessBot()  {   }
+    class Engine{
+    public:
+        Engine()  {   }
 
-    double minimax(cbn::ChessBoard board, const int depth = 2)
-    {
-        auto compare_operator = [](double x, double y){ return x > y; };
-        
-        if (depth == 0 || board.is_game_over(board.colors_turn()))
-            return cbot::board_score(board, board.colors_turn());
-
-        lmn::Legalmoves legal(board);
-
-        double value, best_score;
-
-        // Bot is moving black so search for the best moves
-        if (board.colors_turn() == cbn::Piece_color::Black)
+        double minimax(cbn::ChessBoard board, const int depth = 2)
         {
-            double best_score = std::numeric_limits<double>::lowest();  // lowest best score possible for double as staring point
-        }
-        else
-        {
-            // Human is moving white so hope for the worst moves
-            double best_score = std::numeric_limits<double>::max();  // highest best score possible for double as staring point
-            auto compare_operator = [](double x, double y){ return x < y; };    
-        }
+            auto compare_operator = [](double x, double y){ return x > y; };
+            
+            if (depth == 0 || board.is_game_over(board.colors_turn()))
+                return cbot::board_score(board, board.colors_turn());
 
-        // iterate all legal moves
-        for (int rank_index = 0; rank_index < cbn::CHESS_BOARD_SIZE; ++rank_index)
-        {
-            for (int piece_index = 0; piece_index < cbn::CHESS_BOARD_SIZE; ++piece_index)
+            lmn::Legalmoves legal(board);
+
+            double value, best_score;
+
+            // Bot is moving black so search for the best moves
+            if (board.colors_turn() == cbn::Piece_color::Black)
             {
-                cbn::ChessCoordinate current{piece_index, rank_index};
-                const cbn::Piece& current_piece = board[current];
-
-                // if color != moving_color --> continue iterating
-                if (current_piece.color != board.colors_turn())
-                    continue;
-
-                const auto& move_list = legal.get_legal_moves(current);
-                for (const auto& destination : move_list)
-                {
-                    cbn::ChessNotation notation{current, destination};
-                    cbn::TemporalMove _{board, notation};
-
-                    value = minimax(board, depth - 1);
-
-                    if (compare_operator(value, best_score))
-                        best_score = value;
-                }
+                double best_score = std::numeric_limits<double>::lowest();  // lowest best score possible for double as staring point
             }
-        }
-
-        return best_score;
-    }
-
-    cbn::ChessNotation next_notation(cbn::ChessBoard board, const int depth = 2)
-    {
-        // Pre-Condition: depth exists and game is not over
-        if (depth == 0 || board.is_game_over(board.colors_turn()))
-            return cbn::ChessNotation{};
-
-        lmn::Legalmoves legal(board);
-
-        cbn::ChessNotation best_notation;
-        double best_score = std::numeric_limits<double>::lowest();  // lowest best score possible for double as staring point
-
-        // iterate all legal moves
-        for (int rank_index = 0; rank_index < cbn::CHESS_BOARD_SIZE; ++rank_index)
-        {
-            for (int piece_index = 0; piece_index < cbn::CHESS_BOARD_SIZE; ++piece_index)
+            else
             {
-                cbn::ChessCoordinate current{piece_index, rank_index};
-                const cbn::Piece& current_piece = board[current];
+                // Human is moving white so hope for the worst moves
+                double best_score = std::numeric_limits<double>::max();  // highest best score possible for double as staring point
+                auto compare_operator = [](double x, double y){ return x < y; };    
+            }
 
-                // if color != moving_color --> continue iterating
-                if (current_piece.color != board.colors_turn())
-                    continue;
-
-                const auto& move_list = legal.get_legal_moves(current);
-                for (const auto& destination : move_list)
+            // iterate all legal moves
+            for (int rank_index = 0; rank_index < cbn::CHESS_BOARD_SIZE; ++rank_index)
+            {
+                for (int piece_index = 0; piece_index < cbn::CHESS_BOARD_SIZE; ++piece_index)
                 {
-                    cbn::ChessNotation notation{current, destination};
-                    cbn::TemporalMove _{board, notation};
+                    cbn::ChessCoordinate current{piece_index, rank_index};
+                    const cbn::Piece& current_piece = board[current];
 
-                    double value = minimax(board, depth - 1);
+                    // if color != moving_color --> continue iterating
+                    if (current_piece.color != board.colors_turn())
+                        continue;
 
-                    if (value > best_score)
+                    const auto& move_list = legal.get_legal_moves(current);
+                    for (const auto& destination : move_list)
                     {
-                        best_notation = notation;
-                        best_score = value;
+                        cbn::ChessNotation notation{current, destination};
+                        cbn::TemporalMove _{board, notation};
+
+                        value = minimax(board, depth - 1);
+
+                        if (compare_operator(value, best_score))
+                            best_score = value;
                     }
                 }
             }
+
+            return best_score;
         }
 
-        return best_notation;
-    }
-};
+        cbn::ChessNotation best_notation(cbn::ChessBoard board, const int depth = 2)
+        {
+            // Pre-Condition: depth exists and game is not over
+            if (depth == 0 || board.is_game_over(board.colors_turn()))
+                return cbn::ChessNotation{};
+
+            lmn::Legalmoves legal(board);
+
+            cbn::ChessNotation best_notation;
+            double best_score = std::numeric_limits<double>::lowest();  // lowest best score possible for double as staring point
+
+            // iterate all legal moves
+            for (int rank_index = 0; rank_index < cbn::CHESS_BOARD_SIZE; ++rank_index)
+            {
+                for (int piece_index = 0; piece_index < cbn::CHESS_BOARD_SIZE; ++piece_index)
+                {
+                    cbn::ChessCoordinate current{piece_index, rank_index};
+                    const cbn::Piece& current_piece = board[current];
+
+                    // if color != moving_color --> continue iterating
+                    if (current_piece.color != board.colors_turn())
+                        continue;
+
+                    const auto& move_list = legal.get_legal_moves(current);
+                    for (const auto& destination : move_list)
+                    {
+                        cbn::ChessNotation notation{current, destination};
+                        cbn::TemporalMove _{board, notation};
+
+                        double value = minimax(board, depth - 1);
+
+                        if (value > best_score)
+                        {
+                            best_notation = notation;
+                            best_score = value;
+                        }
+                    }
+                }
+            }
+
+            return best_notation;
+        }
+    };
+}

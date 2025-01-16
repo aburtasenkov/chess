@@ -1,6 +1,9 @@
 #include "chess_bot.hpp"
+#include "chess_board.hpp"
+
 using namespace cbn;
 using namespace lmn;
+using namespace cbot;
 
 template <typename T, typename TT>
 std::ostream& operator<<(std::ostream& os, const std::pair<T,TT>& pair)
@@ -19,7 +22,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 
 ChessBoard board{};
 Legalmoves legal{board};
-ChessBot bot{};
+Engine bot{};
 
 const int COMPUTATION_DEPTH = 4;
 
@@ -30,7 +33,7 @@ int main()
         // Bot is moving
         if (board.colors_turn() == Piece_color::Black)
         {
-            const auto notation = bot.next_notation(board, COMPUTATION_DEPTH);
+            const auto notation = bot.best_notation(board, COMPUTATION_DEPTH);
             const auto& move_list = legal.get_legal_moves(notation.from);
             board.move(move_list, notation);
             continue;
