@@ -55,6 +55,7 @@ namespace cbn
             bn::Board<container_type, Piece, allocator_type> board{DEFAULT_CHESS_BOARD};
             notation_container move_history;
             Piece_color moving_turn{Piece_color::White};
+            std::size_t last_change = 0;   // notations since last state change -- if 100 --> draw
     };
 
     class TemporalMove{
@@ -146,6 +147,7 @@ void cbn::ChessBoard::restore()
 {
     board = DEFAULT_CHESS_BOARD;
     moving_turn = Piece_color::White;
+    last_change = 0;
 }
 
 cbn::Piece& cbn::ChessBoard::operator[](const cbn::ChessCoordinate& location)
@@ -673,6 +675,7 @@ void cbn::ChessBoard::move_piece(const ChessNotation& move)
     operator[](move.from)= EMPTY_SQUARE;
 
     move_history.push_back(move);
+    ++last_change;
 }
 
 bool cbn::ChessBoard::is_checked(const Piece_color& color)
@@ -717,6 +720,11 @@ bool cbn::ChessBoard::move_is_unchecking(const cbn::ChessNotation& move)
 bool cbn::ChessBoard::is_game_over(const cbn::Piece_color& color)
 // return if color has no legal moevs to do
 {
+    if (last_change >= 100)
+    {
+        return true;
+    }
+
     lmn::Legalmoves legal(*this);
 
     if (only_contains(cbn::Piece_type::King))
